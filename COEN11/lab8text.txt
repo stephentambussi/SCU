@@ -1,0 +1,8 @@
+Name  Dept  Info
+kevin  1  101.099998
+john  1  101.000000
+will  2  finger
+tom  2  finger
+rigo  2  arm
+dan  2  leg
+steve  4  10

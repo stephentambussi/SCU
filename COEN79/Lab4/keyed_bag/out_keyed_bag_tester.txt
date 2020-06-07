@@ -1,0 +1,46 @@
+Inserting 5 with key "five".
+Inserting 3 with key "three".
+Inserting 1 with key "one".
+Value for "one": 1
+Value for "three": 3
+Value for "five": 5
+Has five: 1
+Has two: 0
+Bag size: 3
+Erasing "five".
+Bag size: 2
+Has five: 0
+Has three: 1
+Inserting -8 with key "neg_eight".
+Bag size: 3
+Has neg_eight: 1
+Value for "neg_eight": -8
+Number of 9's in the bag: 0
+Number of 1's in the bag: 1
+Inserting 1 with key "ONE".
+Number of 1's in the bag: 2
+Inserting 7 with key "seven".
+Inserting 9 with key "nine".
+Inserting 11 with key "eleven".
+Bag size: 7
+Erasing "eleven".
+Bag size: 6
+Erasing "ONE".
+Bag size: 5
+Inserting 1 with key "1".
+Inserting 2 with key "2".
+Inserting 3 with key "3".
+Inserting 4 with key "4".
+Inserting 5 with key "5".
+Bag size: 10
+Has 1: 1
+Has one: 1
+Has turkey: 0
+Number of 1's in the bag: 2
+Number of 9's in the bag: 1
+Number of -5's in the bag: 0
+Value for "three": 3
+Erasing all of kb2.
+Bag size: 0
+Inserting 22 with key "I'm feelin'".
+Value for "I'm feelin'": 22

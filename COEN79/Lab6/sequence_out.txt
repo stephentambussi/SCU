@@ -1,0 +1,47 @@
+42 
+42 25 
+42 25 2 
+42 25 9 2 
+42 25 17 9 2 
+42 25 17 13 9 2 
+ *** End Removal Test *** 
+42 25 17 13 9 
+ *** Start Removal Test *** 
+25 17 13 9 
+ *** Middle Removal Test *** 
+25 13 9 
+ *** First Assignment Test *** 
+25 13 5 9 
+25 13 9 
+25 18 92 13 9 
+ *** More Assignment Tests *** 
+0 1 2 3 4 
+
+1.001 
+Is item: 1
+1.001 
+Is item: 0
+0 1 2 3 4 5 6 7 8 9 
+Is item: 1
+0 1 2 3 4 5 6 7 8 9 
+Is item: 1
+0 1 2 3 4 5 6 7 8 9 
+Is item: 1
+0 1 2 3 4 5 6 7 8 9 
+Is item: 0
+ *** Lab Example *** 
+Size: 0
+Is_Item: 0
+12 
+17 12 
+Is_Item: 1
+17 7 12 
+17 7 4 12 
+Size: 4
+Is_Item: 0
+3 17 7 4 12 
+3 7 4 12 
+3 7 12 
+3 7 12 11 
+Start: 3
+End: 11

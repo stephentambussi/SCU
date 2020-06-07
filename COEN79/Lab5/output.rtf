@@ -1,0 +1,88 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;}
+{\*\expandedcolortbl;;\csgray\c0;\csgray\c100000;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf2 \cb3 \CocoaLigature0 s1: \
+s2: Hello, World!\
+s3: Hello, World!\
+*** += operator tests ***\
+s1 length: 0\
+s1: A\
+s1 length: 1\
+s1: AB\
+s1 length: 2\
+s1: ABC\
+s1 length: 3\
+*** [] operator test ***\
+s1[0]: A\
+s1[1]: B\
+s1[2]: C\
+*** = operator test ***\
+s2: = Test 1 Success\
+s2: = Test 2 Success\
+*** logical operator tests ***\
+A == A: true\
+A == B: false\
+A != A: false\
+A != B: true\
+A > A: false\
+A > B: false\
+B > A: true\
+A >= A: true\
+A >= B: false\
+B >= A: true\
+A < A: false\
+A < B: true\
+B < A: false\
+A <= A: true\
+A <= B: true\
+B <= A: false\
+*** + operator tests ***\
+A + B: AB\
+A + C: AC\
+B + A: BA\
+*** >> operator test ***\
+Please enter a word: university\
+You entered: university\
+*** Single character constructor test ***\
+C: C\
+*** insert tests ***\
+s1: ABCD\
+s1: -ABCD\
+s1: -AB*CD\
+s1: -AB*CD.\
+*** dlt tests ***\
+s1: 1112233445555\
+s1: 2233445555\
+s1: 22445555\
+s1: 2244\
+*** replace tests ***\
+s1: abc\
+s1: zbc\
+s1: zyc\
+s1: zyx\
+s1: 123DEFGHIJKLMNOP\
+s1: 123DE123IJKLMNOP\
+s1: 123DE123IJKLM123\
+*** count tests ***\
+s1: ABBCCCDDDD\
+Num A's: 1\
+Num B's: 2\
+Num C's: 3\
+Num D's: 4\
+Num E's: 0\
+*** search tests ***\
+s1: ABBCCCDDDD\
+First A: 0\
+First B: 1\
+First C: 3\
+First D: 6\
+First E: -1\
+s1: ABCDEFGHIJKLMNOP\
+Location of "ABC": 0\
+Location of "GHI": 6\
+Location of "NOP": 13\
+Location of "XYZ": -1}

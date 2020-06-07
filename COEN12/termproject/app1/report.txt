@@ -1,0 +1,10 @@
+App1:
+createDataSet = O(n)
+destroyDataSet = O(n)
+searchAge = O(n)
+Insertion = O(n)
+Deletion = O(n)
+MaxAgeGap = O(1)
+
+Justification:
+A simplistic 2D array works well for this application because it provides an easy way to access the data and manipulate it while not being overly complicated. Furthermore, the data being stored is not extremely complex.

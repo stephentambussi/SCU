@@ -1,0 +1,8 @@
+﻿  intr_poly_tester.cpp
+C:\Users\steve\Desktop\COEN79\lab4\polynomial\polygif.cpp(40,17): warning C4309: 'argument': truncation of constant value
+  polynomial.cpp
+C:\Users\steve\Desktop\COEN79\lab4\polynomial\polynomial.cpp(125,21): warning C4018: '<=': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\polynomial\polynomial.cpp(127,22): warning C4018: '<=': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\polynomial\polynomial.cpp(146,16): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  polynomial.vcxproj -> C:\Users\steve\Desktop\COEN79\lab4\Debug\polynomial.exe

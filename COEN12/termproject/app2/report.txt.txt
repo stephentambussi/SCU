@@ -1,0 +1,9 @@
+App2:
+createDataSet = O(n)
+destroyDataSet = O(n)
+searchID = O(1)
+Insertion = O(1)
+Deletion = O(n)
+
+Justification:
+An array of structs makes it easy to store the data for each individual student based upon their age and ID. Furthermore, it provides an easy method of accessing and manipulating the data without being overly complex and having a lot of computational overhead.

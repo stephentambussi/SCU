@@ -1,0 +1,44 @@
+The list: 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5
+ *** list_piece tests *** 
+Empty: 
+Both at head: 
+Three from head: 1, 1.5, 2
+Three in middle: 2, 2.5, 3
+Three on end: 3.5, 4, 4.5
+The end: 4.5
+Full list: 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5
+
+ *** list_copy_segment tests *** 
+Both at head: 1
+Three from head: 1, 1.5, 2
+Three in middle: 2, 2.5, 3
+Three on end: 3.5, 4, 4.5
+The end: 4.5
+Full list: 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5
+
+ *** list_insert_at tests *** 
+Inserting 0.5 at front:
+	0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5
+Inserting 4.75 at back:
+	0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 4.75
+Inserting 2.25 in middle:
+	0.5, 1, 1.5, 2, 2, 2.5, 3, 3.5, 4, 4.5, 4.75
+Inserting -4.3 into an empty list:
+	-4.3
+
+ *** list_occurrences tests *** 
+The list: 0.5, 1, 1.5, 2, 2, 2, 2, 2.5, 3, 3.5, 4, 4.5, 4.75
+Number of 0.5's: 1
+Number of 4.75's: 1
+Number of 3's: 1
+Number of 2's: 4
+Number of 0's: 0
+
+ *** list_remove_at tests *** 
+The list: 0.5, 1, 1.5, 2, 2, 2, 2, 2.5, 3, 3.5, 4, 4.5, 4.75
+Removing first item:
+	1, 1.5, 2, 2, 2, 2, 2.5, 3, 3.5, 4, 4.5, 4.75
+Removing last item:
+	1, 1.5, 2, 2, 2, 2, 2.5, 3, 3.5, 4, 4.5
+Removing 3.5 from the middle:
+	1, 1.5, 2, 2, 2, 2, 2.5, 3, 4, 4.5

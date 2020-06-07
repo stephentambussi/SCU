@@ -1,0 +1,6 @@
+Name  Dept  Info
+kevin  1  101.000000
+tim  2  stomach
+steve  2  bone
+alex  3  2
+will  4  6

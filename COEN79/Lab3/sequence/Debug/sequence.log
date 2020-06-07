@@ -1,0 +1,11 @@
+﻿  sequence.cpp
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(47,26): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(60,26): warning C4018: '>': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(70,28): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(92,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(100,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(119,3): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(125,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(132,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\Lab3\sequence\sequence.cpp(147,21): warning C4018: '<': signed/unsigned mismatch
+  sequence.vcxproj -> C:\Users\steve\Desktop\COEN79\Lab3\Debug\sequence.exe

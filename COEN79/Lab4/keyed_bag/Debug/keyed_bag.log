@@ -1,0 +1,10 @@
+﻿  keyed_bag.cpp
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(23,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(33,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(37,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(58,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(70,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(78,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(90,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\steve\Desktop\COEN79\lab4\keyed_bag\keyed_bag.cpp(97,21): warning C4018: '<': signed/unsigned mismatch
+  keyed_bag.vcxproj -> C:\Users\steve\Desktop\COEN79\lab4\Debug\keyed_bag.exe
