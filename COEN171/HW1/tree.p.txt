@@ -1,0 +1,58 @@
+program BST(input, output);
+        type
+                tree = ^node;
+                node = record
+                        info : integer;
+                        left : tree;
+                        right : tree;
+                end;
+
+        procedure insert(var root : tree; data : integer);
+        begin
+                if root = nil then
+                        begin
+                                new(root);
+                                root^.left := nil;
+                                root^.right := nil;
+                                root^.info := data;
+                        end
+                else if root^.info < data then
+                        insert(root^.right, data)
+                else if root^.info > data then
+                        insert(root^.left, data)
+        end;
+
+        function member(var root : tree; data : integer) : integer;
+        begin
+                if root = nil then
+                        member := 0
+                else if root^.info = data then
+                        member := 1
+                else if root^.info < data then
+                        member := member(root^.right, data)
+                else
+                        member := member(root^.left, data)
+        end;
+var t : tree;
+var x : integer;
+begin
+        t := nil;
+        readln(input, x);
+        
+        while x<>-1 do
+        begin
+                insert(t, x);
+                readln(input, x);
+        end;
+
+        readln(input, x);
+
+        while x<>-1 do
+        begin
+                if member(t, x) = 1 then
+                        writeln('true')
+                else if member(t, x) = 0 then
+                        writeln('false');
+                readln(input, x);
+        end;
+end.
