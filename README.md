@@ -4,3 +4,4 @@ Collection of the computer engineering major classes I have taken at SCU and all
 COEN11 - Advanced Programming
 
 COEN12 - Abstract Data Types and Data Structures
+COEN20 - Introduction to Embedded Systems
