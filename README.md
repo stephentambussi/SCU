@@ -1,6 +1,8 @@
 # SCU
 A collection of the computer engineering major classes I have taken at SCU and all the relevant coursework.
 
+AMTH108 - Probability and Statistics
+
 COEN11 - Advanced Programming (C)
 
 COEN12 - Abstract Data Types and Data Structures (C)
