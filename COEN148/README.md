@@ -1,4 +1,4 @@
-# COEN 148
+# COEN148
 Fall 2020 - Online\
 Computer Graphics System\
 Contains assignments
