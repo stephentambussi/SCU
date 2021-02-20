@@ -12,7 +12,7 @@ struct Node//node declaration
 	char name[20];
 	int department;
 	union patientinfo person;
-	struct Node *next;
+	struct Node *next; //pointer to the next node in linked list
 };
 struct Node *head = NULL;//declare node pointers
 struct Node *tail = NULL;
@@ -25,7 +25,7 @@ int show_info();//new function that displays info for given name
 int main(void)
 {
 	head = (struct Node*)malloc(sizeof(struct Node)); //initialize node pointers - have to initialize in a function
-	tail = (struct Node*)malloc(sizeof(struct Node));
+	tail = (struct Node*)malloc(sizeof(struct Node)); //initial memory allocation - both current point to first node in linked list
 	int state=1;
 	while(state!=0) 
 	{
@@ -76,18 +76,20 @@ int main(void)
 		}
 	}
 	return 0;
-}	
+}
+/*	
 int insert(char x[],int y)//inserts name and department to list
 {
 	int check = check_duplicate(x);
 	if(check==0)//checks for existing name
 	{
-		struct Node *tempor = head;
+		struct Node *tempor = head; //tempor now points to the same location that head points
 		while(tempor->next != NULL)
 		{
-			tempor = tempor->next;
+			tempor = tempor->next; //tempor now points to the next location in the linked list
 		}
-		tempor->next = (struct Node*)malloc(sizeof(struct Node));
+		tempor->next = (struct Node*)malloc(sizeof(struct Node));//when linked list reaches end and needs to add another element it allocates memory for next node
+		//to avoid having to write 'tempor->next' each time, you can add line after mem alloc. 'tempor = tempor->next'
 		printf("Enter info of illness.\n");
 		if(y==1)//adds info of illness
 		{
@@ -113,7 +115,54 @@ int insert(char x[],int y)//inserts name and department to list
 		tempor->next->department = y;
 		strcpy(tempor->next->name,x);
 		tempor->next->next = NULL;
-		tail = tempor->next->next;//tail is equal to last element on list
+		tail = tempor->next->next;//tail now points to the last node in the linked list
+		printf("Added entry!\n");
+	}
+	else//throws error if name exists
+	{
+		printf("Error. Name already exists.\n");
+	}
+}
+*/
+int insert(char x[],int y)//inserts name and department to list
+{
+	int check = check_duplicate(x);
+	if(check==0)//checks for existing name
+	{
+		struct Node *tempor = head; //tempor now points to the same location that head points: first node
+		while(tempor->next != NULL)
+		{
+			tempor = tempor->next; //tempor now points to the next location in the linked list
+		}
+		tempor->next = (struct Node*)malloc(sizeof(struct Node));//when linked list reaches end and needs to add another element it allocates memory for next node
+		//to avoid having to write 'tempor->next' each time, you can add line after mem alloc. 'tempor = tempor->next'
+		tempor = tempor->next;
+		printf("Enter info of illness.\n");
+		if(y==1)//adds info of illness
+		{
+			printf("D1=Fever temperature: ");
+			float temp1;
+			scanf("%f",&temp1);
+			tempor->person.fever=temp1;
+		}
+		else if(y==2)
+		{
+			printf("D2=Type of pain: ");
+			char type[10];
+			scanf("%s",type);
+			strcpy(tempor->person.paintype,type);
+		}
+		else if(y==3||y==4)
+		{
+			printf("D3&D4=Days sick: ");
+			int temp2;
+			scanf("%i",&temp2);
+			tempor->person.daysick=temp2;
+		}
+		tempor->department = y;
+		strcpy(tempor->name,x);
+		tempor->next = NULL;
+		tail = tempor->next;//tail now points to the last node in the linked list
 		printf("Added entry!\n");
 	}
 	else//throws error if name exists

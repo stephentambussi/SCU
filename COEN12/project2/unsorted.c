@@ -9,14 +9,14 @@ typedef struct set
 {
     int count;//number of elements in array
     int length;//size of array
-    char **data;
+    char **data; //an array of strings 
 }SET;
 SET *createSet(int maxElts)//O(1)
 {
     SET *sp;
-    sp=malloc(sizeof(SET));//allocates memory
+    sp=malloc(sizeof(SET));//allocates memory for the set itself
     assert(sp!=NULL);
-    sp->data=malloc(sizeof(char*)*maxElts);
+    sp->data=malloc(maxElts * sizeof(char*));//allocates memory for the set members (elements in the set)
     sp->count=0;
     sp->length=maxElts;
     assert(sp->data!=NULL);
@@ -80,13 +80,14 @@ char *findElement(SET *sp, char *elt)//returns element found by search function 
 char **getElements(SET *sp)//copy information in array to new array -- O(n)
 {
     assert(sp!=NULL);
-    char **copy=malloc(sizeof(char*)*sp->length);//allocates memory for array
+    char **copy=malloc(sp->length * sizeof(char*));//allocates memory for array
     for(int i=0; i<sp->count; i++)
     {
         strcpy(copy[i], sp->data[i]);
     }
     return copy;//returns array
 }
+//static function is only seen in this file (consider it a private function)
 static int search(SET *sp, char *elt, bool *found)//sequential search function -- O(n)
 {
     assert(sp!=NULL);
@@ -94,7 +95,7 @@ static int search(SET *sp, char *elt, bool *found)//sequential search function -
     {
         if(strcmp(sp->data[i],elt)==0)
         {
-            *found = true;
+            *found = true;//basically pass by reference in C
             return i;//return index of where element is
         }
     }

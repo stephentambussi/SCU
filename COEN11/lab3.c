@@ -78,18 +78,19 @@ int insert(char x[],int y)//inserts name and department to list
 }
 int show()//lists the names and departments
 {
-	struct urgentcare *p;//the pointer for the struct
-	p = apptmnt;
-	for(int i=0;i<10;i++,p++)
+	struct urgentcare *p;//declares pointer of type struct urgentcare
+	p = apptmnt;//p points to first element of array of structs: apptmnt
+	for(int i=0;i<10;i++,p++)//could have also put p++ in body of for loop
 	{
 		printf("Name & Department: %s || %d\n",p->name,p->department);//this works-use as example
+		//p++ moves the ptr to the next memory location (next array element)
 	}
 }
 int Remove()//removes oldest item on list with department
 {
 	struct urgentcare *p1,*p2;//pointers for the struct
 	p1 = apptmnt;
-	p2 = apptmnt;
+	p2 = apptmnt;//both p1 and p2 point to first element of array of structs: apptmnt
 	printf("Remove entry on list with given department: ");
 	int removenum;
 	scanf("%d",&removenum);

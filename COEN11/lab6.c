@@ -20,7 +20,7 @@ struct LIST
 	struct Node *head;
 	struct Node *tail;
 }LIST;
-struct LIST arr[5]; // declare the array of lists
+struct LIST arr[5]; // declare the array of linked lists
 void insert();
 void show();
 void Remove();
@@ -123,18 +123,18 @@ void insert(char x[],int y,union patientinfo u)//inserts name and department to 
 	{
 		struct Node *tempor = (struct Node*)malloc(sizeof(struct Node));
 		if(arr[y].head==NULL)
-		{
+		{ //inserts element if list is empty and makes it the head
 			arr[y].head=tempor;
-			arr[y].tail=tempor;
+			arr[y].tail=tempor;//both head and tail point to the node since there is only one element in linked list so far
 			tempor->prev=NULL;
 			tempor->next=NULL;
 		}
 		else 
-		{
-			tempor->prev=arr[y].tail;
-			tempor->next=NULL;
-			arr[y].tail->next=tempor;
-			arr[y].tail=tempor;
+		{ //adds to the end of the list if list already has items in it and makes new node the tail
+			tempor->prev=arr[y].tail; //new node points to previous node in linked list (what tail currently points to)
+			tempor->next=NULL; //no next element since this is the last node in the linked list
+			arr[y].tail->next=tempor; //the node the tail ptr currently points to has its next ptr set to point to the newly added node
+			arr[y].tail=tempor;//finally, the tail ptr is set to point to the newly added node
 		}
 		tempor->person.fever=u.fever;
 		strcpy(tempor->person.paintype,u.paintype);

@@ -5,7 +5,7 @@ int main(void)
 {
 	int divisor, quotient, dividend, score, answer;//initialize variables
 	score = 0;//set score to zero
-	srand((int)time(NULL));//do not know what this does
+	srand((int)time(NULL));//initialize random number generator
 	for(int i=0; i<10; i++)//for loop - ten times
 	{
 	divisor=rand()%12+1;
