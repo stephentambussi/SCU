@@ -1,0 +1,7 @@
+Stephen Tambussi
+
+C Program with two processes
+=============================
+- Step 3: program seg faults without any command line arguments
+- Step 4: A delay of 500 microseconds results in much faster execution than a delay of 5000 microseconds
+

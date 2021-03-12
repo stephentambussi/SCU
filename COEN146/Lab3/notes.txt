@@ -1,0 +1,77 @@
+Stephen Tambussi
+COEN146L - Lab3 - Observations
+
+Step 1
+===================================================
+netstat: Shows active network connections and provides information on these connections like connection protocol (tcp), local and foreign (remote host) address, and state. 
+Also provides information on active unix domain sockets like socket protocol (unix), RefCnt is number of attached processes connected to this socket, type is datagram(connectionless) or stream (connection), state, and path gives the filesystem path of the socket.
+
+ifconfig: configures and provides information on network interfaces.
+Example: eth0 and wlan0 are the first ethernet and wireless network interface respectively
+- can be used to assign static IP addresses to interfaces
+
+hostname: returns/sets the local hostname of the system which is used for establishing a network connection
+
+ping: sends packets to remote host and receives them back then gives information on time for response and packet loss
+
+traceroute: shows each connection point packets take to reach host. Can be used to diagnose network failures
+
+telnet: remotely connects to another host similar to ssh
+
+host/dig: host command provides less information initially than dig command but both have the same functionality
+
+route: can modify network routing table and gives information on it
+- network interface is specified
+
+arp: can modify or provide information on internet to ethernet address translation
+- gives network address and associated mac address 
+
+Step 2
+========================================================
+host 1: www.upenn.edu
+32 bytes
+packet loss = 0
+RTT =  2.775 ms
+1048 bytes
+packet loss = 0
+RTT = 2.543 ms
+
+host 2: www.ox.ac.uk
+32 bytes
+packet loss = 0
+RTT = 6.359 ms
+1048 bytes
+packet loss = 0
+RTT = 6.463 ms
+
+host 3: www.tsinghua.edu.cn
+32 bytes
+packet loss = 0
+RTT = 173.591 ms
+1048 bytes
+packet loss = 0
+RTT = 173.725 ms
+
+Each host is increasing distance from Santa Clara CA so the increase in RTT is attributed to a few factors but it is partly due to propagation delay.
+
+Step 4
+========================================================
+a) Entering the command initially connected to host at 128.119.245.12, if you don't enter escape character after a few moments the connection will close with message: Connection closed by foreign host
+b) After entering the command javascript and html code is received
+c) - index.php is the name of the file
+- the version of HTTP is 1.1
+- the formatting is through html
+
+Step 5
+==========================================================
+www.upenn.edu
+port 80: Normal telnet connection - enter escape character to start entering commands
+port 3389: Doesn't connect - stays stuck on "Trying <IP Address>"
+
+www.ox.ac.uk
+port 80: Normal telnet connection - enter escape character to start entering commands
+port 3389: Doesn't connect - stays stuck on "Trying <IP Address>"
+
+www.tsinghua.edu.cn
+port 80: Normal telnet connection
+port 3389: Doesn't connect- also stuck on "Trying <IP Address>"

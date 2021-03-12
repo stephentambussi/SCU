@@ -1,0 +1,25 @@
+Stephen Tambussi
+
+Processing time for system calls vs library functions
+=====================================================
+Lab computer testing:
+- Copying large text file (Bible) of 3.9 MB was faster using library functions
+	functions = 0.01s	system calls = 0.06s
+- Copying large binary file of 977KB was faster using library functions
+	functions = 0.00s	system calls = 0.01s
+- Copying 10 binary files of varying sizes was the same speed
+	functions = 0.01s	system calls = 0.01s
+- Copying 10 text files of varying sizes was faster using library functions
+	functions = 0.01s	system calls = 0.07s
+
+Personal computer testing: Better accuracy
+- Copying large text file (Bible) of 3.9 MB was faster using library functions
+	functions = 0.071499s	system calls = 1.226491s
+- Copying large binary file of 977KB was faster using library functions
+	functions = 0.021957s	system calls = 0.283960s
+- Copying 10 binary files of varying sizes was faster using library functions
+	functions = 0.065381s	system calls = 0.673292s 
+- Copying 10 text files of varying sizes was faster using library functions
+	functions = 0.169314s	system calls = 2.193263s
+
+Overall, library functions provide faster file IO than system calls 
