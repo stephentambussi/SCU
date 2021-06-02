@@ -1,0 +1,19 @@
+Stephen Tambussi
+COEN177L - Thursday 5:15PM
+Lab4 Observations
+==========================
+Step 1:
+ - Running the threadHello.c program does not produce the same result if you run it multiple times, the thread numbers are sometimes repeated varying from run to run.
+ 
+ - The print statement "Hello from thread <num> with thread ID <num>" would sometimes print out of order from the order of thread creation displaying the non-deterministic scheduling of threads.
+ 
+ - When running a CPU benchmarking software, the output of the threadHello program did not change and each output was different like before. 
+ 
+ - The thread function *go with its parameter (void *arg) takes a variable that is per-thread. The compiler stores these variables' states in the thread's stack.
+ 
+ - The variable i being a static variable means that it is global in scope so therefore it is in the shared state for the threads. The compiler stores this variable in the global variables memory portion of the process.
+
+Step 2:
+ - Modified program has similar output to previous threadHello.c program except it is missing "Thread <num> returned" statement.
+
+ - Difference between the two programs is that the "Main thread done." statement is not always the last output. Removing the pthread_join command prevents the main thread from waiting for all its children before terminating so the "Main thread done" statement can print out before. 

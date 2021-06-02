@@ -1,0 +1,13 @@
+Stephen Tambussi
+COEN177L - Thursday 5:15PM
+Lab2 Observations
+==========================
+Step 3:
+ - Without a command line argument when executing the program, the program has a segmentation fault.
+
+Step 4:
+ - With a delay of 500 microseconds, the program finishes executing very quickly (less than half a second).
+ - With a delay of 5000 microseconds, the program takes longer to finish executing than with a delay of 500.
+
+Step 6:
+ - Like the process code, the thread program gives a seg fault without a command line argument. 

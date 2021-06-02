@@ -1,0 +1,17 @@
+Stephen Tambussi
+COEN177L - Thursday 5:15PM
+Lab5 Observations
+==========================
+Step 1:
+ - buyingMilkSol1: this program ends up buying too much milk because thread A is context switched to thread B after checking milk and note but before buying milk. It is context switched because of the sleep(10) code.
+
+ - buyingMilkSol2: this program ends up not buying any milk because thread A context switches (due to sleep(10)) after leaving a note and checking if there is milk. Thread B then leaves a note, checks the milk, and then checks the note value, but since it is already true it does not buy milk.
+
+ - buyingMilkSol3: this program also ends up not buying milk. Thread A leaves note A but then context switches to thread B due to sleep(10). Thread B then leaves note B but also context switches back to thread A due to sleep(10). Then, both threads check the other's note value (both are true) so neither of them buy milk.
+
+ - buyingMilkSol4: this program finally buys the right amount of milk. Thread A leaves note A and then context switches to thread B. Thread B leaves note B, checks note A, and then removes note B. Finally, thread A continues execution after note B is removed and successfully buys milk. However, this program has a lot of busy-waiting which consumes CPU time.
+
+Step 2:
+ - The threadSync program executes the created threads in order. The statements "Thread <i> Entered Critical Section.." and "Thread <i> returned" are printed in order from 0 to 9. This program differs from the threadHello program because it implements synchronization with semaphores that force each thread to wait its turn to execute the go function. The threadHello program did not implement semaphores so the output of the program varied each time it was run.
+
+ 

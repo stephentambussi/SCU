@@ -1,0 +1,19 @@
+Stephen Tambussi
+COEN177L - Thursday 5:15PM
+Lab3 Observations
+==========================
+Step 1:
+ - This program executes code that is the equivalent of the command line code: "ls | sort" using pipes for IPC.
+ - "ls | sort" displays the contents of the current directory in alphanumeric order.
+
+Step 2:
+ - This program sends cmd line arguments from one process to another process for output using pipes.
+
+Step 3:
+ - This program sends the output of the "ls" command from one process to another for output using pipes. It is a modification of the program from step 2.
+
+Step 4:
+ - This program executes code that is the equivalent of the command line code: "cat /etc/passwd | grep root" using pipes for IPC.
+
+Step 5:
+ - This program is an example of the producer-consumer problem using pipes. 

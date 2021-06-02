@@ -1,0 +1,11 @@
+Stephen Tambussi
+COEN177L - Thursday 5:15PM 
+Lab1 Observations
+==========================
+Step 2:
+ - Script outputs the amount of files in current directory 
+ - Then the script prints out the number of lines in the files that are in the current directory with the 'wc' command
+ - It then gives the home directory, username, value of path environment variable, and the current working directory path
+ - Script outputs the process id of the current process
+ - Then it checks that I am the current user on the system to continue with execution
+ - The script performs the computation of the area of a rectangle within a while loop until the user inputs 'No'
