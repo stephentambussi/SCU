@@ -9,4 +9,5 @@ COEN148 - Computer Graphics Systems (Python, C, C++)\
 COEN171 - Design and Implementation of Programming Languages (Various)\
 COEN146 - Computer Networks (C)\
 COEN140 - Machine Learning and Data Mining (Python)\
-COEN177 - Operating Systems (C, Shell script)
+COEN177 - Operating Systems (C, Shell script)\
+COEN174 - Software Engineering (Java, UML, Python)
