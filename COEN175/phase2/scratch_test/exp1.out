@@ -1,0 +1,14 @@
+add
+call
+add
+index
+mul
+index
+sizeof
+sizeof
+cast
+add
+sizeof
+or
+div
+sub

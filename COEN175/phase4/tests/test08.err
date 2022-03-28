@@ -1,0 +1,4 @@
+line 2: 'x' has incomplete type
+line 10: redefinition of 's1'
+line 12: pointer type required for 'f'
+line 14: pointer type required for 'y'

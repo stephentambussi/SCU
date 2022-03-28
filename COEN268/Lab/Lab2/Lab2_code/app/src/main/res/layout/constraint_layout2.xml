@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="center"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent">
+    </Button>
+
+    <Button
+        android:id="@+id/north"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="north"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="0"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+    <Button
+        android:id="@+id/south"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="south"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="180"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+    <Button
+        android:id="@+id/ne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ne"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="45"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+    <Button
+        android:id="@+id/east"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="east"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="90"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+    <Button
+        android:id="@+id/se"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="se"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="135"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+    <Button
+        android:id="@+id/sw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sw"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="225"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+    <Button
+        android:id="@+id/west"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="west"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="270"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+    <Button
+        android:id="@+id/nw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="nw"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintCircle="@id/center"
+        app:layout_constraintCircleAngle="315"
+        app:layout_constraintCircleRadius="140dp">
+    </Button>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

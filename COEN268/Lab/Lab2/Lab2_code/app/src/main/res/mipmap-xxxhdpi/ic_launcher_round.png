@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignUpActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="20dp" />
+
+    <TextView
+        android:id="@+id/scuevents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="SCU EVENTS"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="32dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toBottomOf="@id/topguideline" />
+
+    <TextView
+        android:id="@+id/signup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Create Account"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:gravity="center"
+
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toBottomOf="@id/scuevents" />
+
+    <TextView
+        android:id="@+id/firstnametv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="FIRST NAME"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@id/fName"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toTopOf="@id/fName"
+        app:layout_constraintBottom_toBottomOf="@id/fName"/>
+
+    <EditText
+        android:id="@+id/fName"
+        android:layout_width="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/editextbackground"
+        android:ems="10"
+        android:hint="Enter Here"
+        android:inputType="textPersonName"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/firstnametv"
+        app:layout_constraintTop_toBottomOf="@id/signup" />
+
+    <TextView
+        android:id="@+id/lastnametv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="LAST NAME"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@id/lName"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toTopOf="@id/lName"
+        app:layout_constraintBottom_toBottomOf="@id/lName"/>
+
+    <EditText
+        android:id="@+id/lName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/editextbackground"
+        android:ems="10"
+        android:hint="Enter Here"
+        android:inputType="textPersonName"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/lastnametv"
+        app:layout_constraintTop_toBottomOf="@id/fName" />
+
+    <TextView
+        android:id="@+id/emailtv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="EMAIL ID"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@id/email"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toTopOf="@id/email"
+        app:layout_constraintBottom_toBottomOf="@id/email"/>
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/editextbackground"
+        android:ems="10"
+        android:hint="user@scu.edu"
+        android:inputType="textEmailAddress"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/emailtv"
+        app:layout_constraintTop_toBottomOf="@id/lName" />
+
+    <TextView
+        android:id="@+id/pwdtv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="PASSWORD"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@id/pwd"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toTopOf="@id/pwd"
+        app:layout_constraintBottom_toBottomOf="@id/pwd"/>
+
+    <EditText
+        android:id="@+id/pwd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/editextbackground"
+        android:ems="10"
+        android:hint="password"
+        android:inputType="textPassword"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/pwdtv"
+        app:layout_constraintTop_toBottomOf="@id/email" />
+
+    <TextView
+        android:id="@+id/cnfpwdtv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="CONFIRM PASSWORD"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toStartOf="@id/cnfpwd"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toTopOf="@id/cnfpwd"
+        app:layout_constraintBottom_toBottomOf="@id/cnfpwd"/>
+
+    <EditText
+        android:id="@+id/cnfpwd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/editextbackground"
+        android:ems="10"
+        android:hint="password"
+        android:inputType="textPassword"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/cnfpwdtv"
+        app:layout_constraintTop_toBottomOf="@id/pwd" />
+
+    <Button
+        android:id="@+id/signButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:background="@drawable/buttonpositivedesign"
+        android:onClick="signup"
+        android:padding="8dp"
+        android:text="SIGN UP"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toBottomOf="@id/cnfpwd" />
+
+<!--    <Button-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="72dp"-->
+<!--        android:background="@drawable/buttonbg"-->
+<!--        android:onClick="back"-->
+<!--        android:padding="8dp"-->
+<!--        android:text="Back to Sign In"-->
+<!--        android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+<!--        android:textColor="#FFFFFF"-->
+<!--        android:textSize="24sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintEnd_toStartOf="@id/rightguideline"-->
+<!--        app:layout_constraintHorizontal_bias="0.497"-->
+<!--        app:layout_constraintStart_toEndOf="@id/leftguideline"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/signButton" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           

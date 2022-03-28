@@ -10,4 +10,7 @@ COEN171 - Design and Implementation of Programming Languages (Various)\
 COEN146 - Computer Networks (C)\
 COEN140 - Machine Learning and Data Mining (Python)\
 COEN177 - Operating Systems (C, Shell script)\
-COEN174 - Software Engineering (Java, UML, Python)
+COEN174 - Software Engineering (Java, UML, Python)\
+COEN175 - Introduction to Formal Language Theory and Compiler Construction (C++)\
+COEN268 - Mobile Application Development (Java and Android)\
+ELEN285 - Introduction to the Smart Grid (Python)

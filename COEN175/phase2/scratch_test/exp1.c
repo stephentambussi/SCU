@@ -1,0 +1,1 @@
+x + y - z() * b[x + y] / ((int *** ) sizeof sizeof (w[3]) + 2 || sizeof (int ***))

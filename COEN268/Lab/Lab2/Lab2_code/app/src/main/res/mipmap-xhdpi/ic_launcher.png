@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/rightguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="20dp"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/leftguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="283dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topguideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
+
+
+    <TextView
+        android:id="@+id/scuevents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="SCU EVENTS"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="32dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toBottomOf="@id/topguideline" />
+
+    <ImageView
+        android:id="@+id/sculogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+
+        app:layout_constraintBottom_toTopOf="@id/bottomguideline"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toBottomOf="@id/topguideline"
+        app:srcCompat="@drawable/logo_transparent" />
+
+    <EditText
+        android:id="@+id/email_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="32dp"
+        android:fontFamily="sans-serif"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toBottomOf="@id/bottomguideline" />
+
+    <EditText
+        android:id="@+id/password_textview"
+        android:layout_width="371dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="16dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/leftguideline"
+        app:layout_constraintTop_toBottomOf="@id/email_textview" />
+
+    <TextView
+        android:id="@+id/createAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:onClick="createaccount"
+        android:text="Create an account"
+        android:textColor="@color/colorPrimaryDark"
+
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintTop_toBottomOf="@id/password_textview" />
+
+    <Button
+        android:id="@+id/signinButton"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:background="@drawable/buttonpositivedesign"
+        android:onClick="Signin"
+        android:text="SIGN IN"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/rightguideline"
+        app:layout_constraintHorizontal_bias="0.4

@@ -1,0 +1,3 @@
+line 5: redeclaration of 'x'
+line 10: redeclaration of 'b'
+line 13: redeclaration of 'y'

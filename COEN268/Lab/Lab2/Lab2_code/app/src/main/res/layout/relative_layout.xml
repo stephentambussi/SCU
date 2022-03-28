@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="North"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/north">
+    </Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Center"
+        android:layout_centerInParent="true"
+        android:id="@+id/center">
+    </Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="West"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="20dp"
+        android:id="@+id/west">
+    </Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="East"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="20dp"
+        android:id="@+id/east">
+    </Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/north"
+        android:layout_toStartOf="@id/center"
+        android:layout_marginTop="30dp"
+        android:text="NW"></Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/north"
+        android:layout_toEndOf="@id/center"
+        android:layout_marginTop="30dp"
+        android:text="NE"></Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/south"
+        android:layout_toStartOf="@id/center"
+        android:text="SW"></Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/south"
+        android:layout_toEndOf="@id/center"
+        android:text="SE"></Button>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="South"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="100dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/south"
+        android:layout_marginTop="30dp">
+    </Button>
+
+</RelativeLayout>

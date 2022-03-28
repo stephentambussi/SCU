@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Lab4</string>
+    <string name="view_student">View All Students</string>
+    <string name="add_student">Add Student</string>
+    <string name="delete_student">Delete Student</string>
+    <string name="update_student">Update Student Info</string>
+    <string name="search_student">Search Student</string>
+    <string name="add_new_student">Add New Student</string>
+
+    <string name="student_id">Student ID</string>
+    <string name="student_name">Name</string>
+    <string name="student_email">Email</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_update">Update</string>
+    <string name="btn_search">Search</string>
+</resources>

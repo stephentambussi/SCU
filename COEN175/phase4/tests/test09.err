@@ -1,0 +1,8 @@
+line 2: conflicting types for 'b'
+line 3: conflicting types for 'd'
+line 6: conflicting types for 'y'
+line 8: conflicting types for 'x'
+line 14: 'z' undeclared
+line 18: conflicting types for 'e'
+line 20: conflicting types for 'foo'
+line 22: redefinition of 'foo'
