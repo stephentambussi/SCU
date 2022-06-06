@@ -1,0 +1,28 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/21/2022
+//  Topic: COEN122 - Lab3
+//  Description: Data Memory
+//////////////////////////////////////////////////////////////////////////////////
+
+module dataMem(clk, read, wrt, address, datain, dataout);
+input clk;
+input read;
+input wrt;
+//2D array - data memory holds 65,535 32-bit values
+reg [31:0] data [65535:0];
+
+input [31:0] address; //only using lower 16-bits of address so 65,535 possible values
+input [31:0] datain;
+
+output reg [31:0] dataout;
+
+always@(posedge clk)
+begin
+    if(read == 1)
+        dataout = data[address[15:0]];
+    if(wrt == 1)
+        data[address[15:0]] = datain;
+end
+endmodule

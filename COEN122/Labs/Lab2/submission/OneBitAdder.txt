@@ -1,0 +1,30 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/14/2022
+//  Topic: COEN122 - Lab2
+//  Description: 1 Bit Adder
+//////////////////////////////////////////////////////////////////////////////////
+
+module OneBitAdder(A, B, cin, sum, cout);
+
+input A, B, cin;
+output cout, sum;
+wire out_xor_AB, out_and_ABCin, out_and_AB;
+
+//XOR A and B
+xor(out_xor_AB, A, B);
+
+//XOR output of XOR A & B and Cin
+xor(sum, out_xor_AB, cin);
+
+//AND output of XOR A & B and Cin
+and(out_and_ABCin, out_xor_AB, cin);
+
+//AND output of A and B
+and(out_and_AB, A, B);
+
+//OR gate for Cout
+or(cout, out_and_ABCin, out_and_AB);
+
+endmodule

@@ -1,0 +1,70 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/21/2022
+//  Topic: COEN122 - Lab3
+//  Description: Testbench
+//////////////////////////////////////////////////////////////////////////////////
+
+module lab3_testbench();
+reg clock;
+
+reg [7:0] address;
+wire [31:0] inst;
+instructionMem test1(clock, address, inst);
+
+reg write;
+reg [5:0] rs1;
+reg [5:0] rs2;
+reg [5:0] rd;
+reg [31:0] datain;
+wire [31:0] rs1out;
+wire [31:0] rs2out;
+registerFile test2(clock, write, rd, rs1, rs2, datain, rs1out, rs2out);
+
+reg data_write, read;
+reg [31:0] data_address;
+reg [31:0] data_in;
+wire [31:0] data_out;
+dataMem test3(clock, read, data_write, data_address, data_in, data_out);
+
+initial
+begin
+    clock = 0;
+    forever #5 clock = ~clock;
+end
+
+initial
+begin
+    //Instruction test
+    address = 250;
+    #50
+    address = 150;
+    
+    //Register test
+    #50
+    write = 1;
+    datain = 101;
+    rd = 10;
+    
+    #50
+    datain = 111;
+    rd = 11;
+    
+    #50
+    write = 0;
+    rs1 = 10;
+    rs2 = 11;
+    
+    //Data test
+    #50
+    data_write = 1;
+    read = 0;
+    data_address = 256;
+    data_in = 1024;
+    
+    #50
+    data_write = 0;
+    read = 1;
+end
+endmodule

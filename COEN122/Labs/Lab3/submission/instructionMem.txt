@@ -1,0 +1,24 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/21/2022
+//  Topic: COEN122 - Lab3
+//  Description: Instruction Memory
+//////////////////////////////////////////////////////////////////////////////////
+
+module instructionMem(clk, address, inst);
+input clk;
+input [7:0] address; //256 possible instructions with 8-bit address
+output reg [31:0] inst;
+//2D array - instruction memory holds 256 32-bit instructions
+wire [31:0] instructions [255:0];
+
+//hard code instruction values for the test bench
+assign instructions[250] = 25;
+assign instructions[150] = 15;
+
+always@(posedge clk)
+begin
+    inst = instructions[address];
+end
+endmodule

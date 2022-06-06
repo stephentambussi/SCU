@@ -1,0 +1,29 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/21/2022
+//  Topic: COEN122 - Lab3
+//  Description: Register file
+//////////////////////////////////////////////////////////////////////////////////
+
+module registerFile(clk, wrt, rd, rs1, rs2, datain, rs1out, rs2out);
+input clk;
+input wrt;
+input [5:0] rd; //64 possible values with 6-bit address
+input [5:0] rs1;
+input [5:0] rs2;
+input [31:0] datain;
+//2D array - register memory holds 64 32-bit values
+reg [31:0] registers [63:0];
+
+output reg [31:0] rs1out;
+output reg [31:0] rs2out;
+
+always@(posedge clk)
+begin
+    rs1out = registers[rs1];
+    rs2out = registers[rs2];
+    if(wrt == 1)
+        registers[rd] = datain;
+end
+endmodule

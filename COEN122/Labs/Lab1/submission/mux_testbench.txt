@@ -1,0 +1,39 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/7/2022
+//  Topic: COEN122 - Lab1
+//  Description: 4:1 Multiplexer testbench
+//////////////////////////////////////////////////////////////////////////////////
+
+module mux_testbench();
+reg A,B,C,D;
+reg [1:0] sel;
+wire out;
+mux test(A,B,C,D,sel,out);
+initial begin
+    //Set outputs
+    A = 1;
+    B = 0;
+    C = 1;
+    D = 0;
+    
+    //Output is A
+    sel = 2'b00;
+    #50
+    
+    //Output is B
+    sel = 2'b01;
+    #50
+    
+    //Output is C
+    sel = 2'b10;
+    #50
+    
+    //Output is D
+    sel = 2'b11;
+    #50
+
+    $finish;
+end
+endmodule

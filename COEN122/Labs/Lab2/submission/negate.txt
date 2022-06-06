@@ -1,0 +1,51 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/14/2022
+//  Topic: COEN122 - Lab2
+//  Description: 2's complement negate operator
+//////////////////////////////////////////////////////////////////////////////////
+
+module negate(A, out);
+
+input [31:0] A;
+output [31:0] out;
+wire [31:0] negA;
+wire cout;
+
+not(negA[0], A[0]);
+not(negA[1], A[1]);
+not(negA[2], A[2]);
+not(negA[3], A[3]);
+not(negA[4], A[4]);
+not(negA[5], A[5]);
+not(negA[6], A[6]);
+not(negA[7], A[7]);
+not(negA[8], A[8]);
+not(negA[9], A[9]);
+not(negA[10], A[10]);
+not(negA[11], A[11]);
+not(negA[12], A[12]);
+not(negA[13], A[13]);
+not(negA[14], A[14]);
+not(negA[15], A[15]);
+not(negA[16], A[16]);
+not(negA[17], A[17]);
+not(negA[18], A[18]);
+not(negA[19], A[19]);
+not(negA[20], A[20]);
+not(negA[21], A[21]);
+not(negA[22], A[22]);
+not(negA[23], A[23]);
+not(negA[24], A[24]);
+not(negA[25], A[25]);
+not(negA[26], A[26]);
+not(negA[27], A[27]);
+not(negA[28], A[28]);
+not(negA[29], A[29]);
+not(negA[30], A[30]);
+not(negA[31], A[31]);
+
+fullAdder add_32(.A(negA), .B(1), .cout(cout), .sum(out));
+
+endmodule

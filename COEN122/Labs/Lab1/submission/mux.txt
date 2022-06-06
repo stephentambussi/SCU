@@ -1,0 +1,35 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/7/2022
+//  Topic: COEN122 - Lab1
+//  Description: 4:1 Multiplexer
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module mux(A,B,C,D,select,out);
+
+input [1:0] select;
+input A,B,C,D;
+wire outA,outB,outC,outD,not_sel0,not_sel1;
+output out;
+
+not(not_sel0, select[0]);
+not(not_sel1, select[1]);
+
+//A
+and(outA, A, not_sel1, not_sel0);
+
+//B
+and(outB, B, not_sel1, select[0]);
+
+//C
+and(outC, C, select[1], not_sel0);
+
+//D
+and(outD, D, select[1], select[0]);
+
+//Final OR gate
+or(out, outA, outB, outC, outD);
+
+endmodule

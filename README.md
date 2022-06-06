@@ -13,4 +13,5 @@ COEN177 - Operating Systems (C, Shell script)\
 COEN174 - Software Engineering (Java, UML, Python)\
 COEN175 - Introduction to Formal Language Theory and Compiler Construction (C++)\
 COEN268 - Mobile Application Development (Java and Android)\
-ELEN285 - Introduction to the Smart Grid (Python)
+ELEN285 - Introduction to the Smart Grid (Python)\
+COEN122 - Computer Architecture (Verilog)

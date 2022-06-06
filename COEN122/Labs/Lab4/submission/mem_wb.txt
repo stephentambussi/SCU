@@ -1,0 +1,34 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+//  Name: Stephen Tambussi
+//  Date: 4/28/2022
+//  Topic: COEN122 - Lab4
+//  Description: MEM/WB Buffer - connects memory and write-back stages
+//////////////////////////////////////////////////////////////////////////////////
+
+module mem_wb(clk, memtoreg_in, memtoreg_out, regwrt_in, regwrt_out, read_data_in, read_data_out, aluresult_in, aluresult_out, rd_in, rd_out);
+
+input clk;
+input memtoreg_in;
+input regwrt_in;
+
+input [31:0] read_data_in;
+input [31:0] aluresult_in;
+input [4:0] rd_in;
+
+output reg memtoreg_out;
+output reg regwrt_out;
+
+output reg [31:0] read_data_out;
+output reg [31:0] aluresult_out;
+output reg [4:0] rd_out;
+
+always@(posedge clk)
+begin
+    memtoreg_out = memtoreg_in;
+    regwrt_out = regwrt_in;
+    read_data_out = read_data_in;
+    aluresult_out = aluresult_in;
+    rd_out = rd_in;
+end
+endmodule
