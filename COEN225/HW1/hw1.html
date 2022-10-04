@@ -1,0 +1,168 @@
+
+<!-- saved from url=(0048)https://www.engr.scu.edu/~slam3/coen225/hw1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>Homework 1 (5%) 
+<br>
+Due: Oct 4, 2022 12am by email, to slam3@scu.edu
+<br>
+<pre>WARM UP exercise 1:a popular interview question (0 point):
+
+Write a C program to determine if the running hardware is big or little endian.
+When run, print either "big endian" or "little endian" .
+
+Submission instruction: no need to submit, but similar problem may be on the exam.
+
+
+WARM UP exercise 2:a popular interview question (0 point):
+
+Write a C program to determine if the running process's stack space is growing upward or download.
+Growing upward means when the main program calls function foo, foo's stack frame is pushed on top of main's,
+foo's stack frame address is higher than main's stack frame address.
+Growing downward means when the main program calls function foo, foo's stack frame is pushed on top of main's,
+foo's stack frame address is lower than main's stack frame address.
+When run, print either "upward" or "downward" .
+
+Submission instruction: no need to submit, but similar problem may be on the exam.
+
+
+PROBLEM 1 (1 point): Given the following program, insert some code naming only array a1 to modify array a4, such as
+
+a1[something] = 9;
+
+to create 2 diagnols of 9's in the two dimensional array a4, resulting in output of:
+
+  9,0,0,0,0,0,0,0,9,
+  0,9,0,0,0,0,0,9,0,
+  0,0,9,0,0,0,9,0,0,
+  0,0,0,9,0,9,0,0,0,
+  0,0,0,0,9,0,0,0,0,
+  0,0,0,9,0,9,0,0,0,
+  0,0,9,0,0,0,9,0,0,
+  0,9,0,0,0,0,0,9,0,
+  9,0,0,0,0,0,0,0,9,
+
+  1 #include &lt;stdio.h&gt;
+  2 #include &lt;string.h&gt;
+  3  int a1[5];
+  4  int a4[9][9];
+  5  int main()
+  6  {
+  7    // using printf format %p to print the address
+  8    printf("a1 %p\n",&amp;a1[0]);
+  9    printf("a4 %p\n",&amp;a4[0][0]);
+ 10    
+ 11    a1[0]=9;
+ 12  /*
+ 13    Add code below the printf doing assignments to a1 to modify a4, like
+ 14 
+ 15    a1[something] = 0;
+ 16  */
+ 17    printf("a1[]=%d,%d,%d,%d,%d\n",a1[0],a1[1],a1[2],a1[3],a1[4]);
+ 18    for (int i=0; i&lt;9; i++) {
+ 19      for (int j=0; j&lt;9; j++)
+ 20        printf("%d,",a4[i][j]);
+ 21      printf("\n");
+ 22    }
+ 23  }
+Submission instruction: name the file problem1.c and send it as an email attachment.
+
+ZERO POINT exercise:
+
+Reference: https://en.wikipedia.org/wiki/Row-_and_column-major_order
+
+C two dimensional arrays are laid out as row major, a full row is laid out consecutively in memory before the next row.
+
+Elements from array a4 of problem 1 are laid out in this order
+a4[0][0],a4[0][1],a4[0][2]...,a4[0][8],a4[1][0],a4[1][1],a4[1][2]...,a4[0][8],
+
+If C two dimensional array a4 had been laid out as column major:
+a4[0][0],a4[1][0],a4[2][0]...,a4[8][0],a4[0][1],a4[1][1],a4[2][1]...,a4[8][1],
+
+How would your answers from problem 1 change?
+
+PROBLEM 2 (2 points): Given the following program, create two input lines such that you can redirect the program to print
+
+you guessed right!
+
+although you don't know the password nor passcode.
+
+  1  #include &lt;stdio.h&gt;
+  2  #include &lt;string.h&gt;
+  3  char password[16];
+  4  char passcode[16];
+  5  char input1[16];
+  6  char input2[16];
+  7  int main()
+  8  {
+  9    strcpy(password,"california");
+ 10    strcpy(passcode,"0123443210");
+ 11    printf("enter password:");
+ 12    scanf("%s",input1);
+ 13 
+ 14    if (strcmp(input1,password)==0) {
+ 15      printf("you guessed right!\n");
+ 16      return 0;
+ 17    }
+ 18 
+ 19    printf("Password incorrect, enter backup passcode:");
+ 20    scanf("%s",input2);
+ 21 
+ 22    if (strcmp(input2,passcode)==0)
+ 23      printf("you guessed right!\n");
+ 24    else
+ 25      printf("you guessed wrong!\n");
+ 26  }
+
+Submission instruction: name the file problem2.txt and send it as an email attachment.
+
+PROBLEM 3 (2 points): Given the following program, create one input lines such that you can get the output to show s2 being "123" without segmentation fault.
+
+  1 #include &lt;string&gt;
+  2 #include &lt;stdio.h&gt;
+  3 #include &lt;string.h&gt;
+  4 int main()
+  5 {
+  6     std::string s1 = "abc";
+  7     std::string s2 = "";
+  8     char *cp1 = (char*) s1.c_str();
+  9     char *cp2 = (char*) s2.c_str();
+ 10     printf("s1=%s\n",cp1);
+ 11     printf("s2=%s\n",cp2);
+ 12     scanf("%s",cp1);
+ 13     printf("s1=%s\n",cp1);
+ 14     printf("s2=%s\n",cp2);
+ 15 }
+
+Hint 1: 
+The address of variables can vary between gdb sessions and actually runs.
+To get the address of a variable at actual runs, add the following to view the address:
+
+  printf("s1=%p\n",cp1);
+
+Hint 2: 
+You would also need to create the input in a file like /tmp/input and pipe it to the program like:
+
+$ cat /tmp/input | ./a.out
+
+because the input may contain non-printable characters that you cannot entered using the keyboard.
+
+You can generate non-printable characters by the following program:
+
+$ cat printnop.c
+#include &lt;stdio.h&gt;
+int main()
+{
+  unsigned int nonprintable=0xdeadbeef;
+  printf("%s\n",(char*)&amp;nonprintable);
+}
+$ gcc printnop.c
+$ ./a.out &gt; /tmp/input
+$ od -x /tmp/input
+0000000 beef dead 000a
+0000005
+
+Submission instruction: name the input file that you pipe to the a.out as problem3.txt and send as email attachment.
+
+***Send one single email to slam3@scu.edu with attachments corresponding to the problems.
+Email subject should have: hw1 solution from <your name="">
+In the email body, have 3 paragraphs, each describing how you solved each problem.
+</your></pre></body></html>
