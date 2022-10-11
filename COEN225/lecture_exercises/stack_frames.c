@@ -1,8 +1,8 @@
-/* Lecture 2 - Stack frame exploit 
+/* Lecture 2 - Stack frames explained
 *  - Need to compile with -fno-stack-protector
 */
 #include <stdio.h>
-#include <stdlib.>
+#include <stdlib.h>
 
 void foo(int i, char *name)
 {
