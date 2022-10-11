@@ -1,0 +1,32 @@
+C++ Class Hierarchy:
+
+                        Employee
+                        /   |   \
+                       /    |    \
+                      /     |     \
+                     /      |      \
+            President    Director   Janitor
+
+President vp1
+[vptr][name    (32B)     ][id  (8B)  ][salary]
+  |
+  V
+President vtable
+[&President::pay()  ]---->President::pay()
+[&President::info() ]---->President::info()
+
+Director d1
+[vptr][name    (32B)     ][id  (8B)  ][salary]
+  |
+  V
+Director vtable
+[&Director::pay()  ]---->Director::pay()
+[&Director::info() ]---->Director::info()
+
+Janitor j1
+[vptr][name    (32B)     ][id  (8B)  ][salary]
+  |
+  V
+Janitor vtable
+[&Janitor::pay()  ]---->Janitor::pay()
+[&Janitor::info() ]---->Janitor::info()

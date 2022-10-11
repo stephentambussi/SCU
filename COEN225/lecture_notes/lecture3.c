@@ -39,7 +39,8 @@ int main(void)
 *   - Virtual function: member function that is declared in base class and redefined by a derived class
 *
 *   C++ Virtual Table Exploit
-*   - Stealing virtual pointers to have other functions operate on you instead (NEED TO WATCH VIDEOS AGAIN)
+*   - Stealing virtual pointers to have functions from another derived class (still sharing same parent class)
+*     operate on specified derived class instead
 *
 *   Global Offset Table (GOT) Overview
 *   - Section of program's memory that holds addresses of functions that are dynamically linked

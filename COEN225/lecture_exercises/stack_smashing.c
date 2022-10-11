@@ -14,6 +14,8 @@ int IsPasswordOK(void)
     *   You can modify this function's return address
     *   on the stack to change where it returns. This
     *   will redirect the program in any way you like.
+    *   This return address modification is the basis
+    *   for code injection and enabling a shell.
     */
 }
 
