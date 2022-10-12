@@ -48,7 +48,7 @@ int main(void) //function and its parameters = STACK
 *   
 *   Code-injection
 *   - Adding code after victim code in stack & then change return address to point to injected code
-*       - Injected code needs to be compiled into object code first
+*       - Injected code needs to be compiled into object code first and stack needs to be executable
 *   
 *   Misc.
 *   - '-fno-stack-protector' arg will remove the stack canary that prevents stack exploits
