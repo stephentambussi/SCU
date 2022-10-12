@@ -61,5 +61,19 @@ int main (void)
 *    initial sbrk(0)                          after 1st malloc
 *   - First call to malloc will establish the heap space (more than you will probably need)
 *
-*   TODO: take notes on the valgrind portion of this lecture
+*   Common Heap Coding Errors:
+*   - Not checking return value of malloc
+*   - Assuming malloc'd memory is initialized/zeroed
+*   - Referencing null or free'd memory
+*   - Freeing the same allocated memory more than once
+*   - Not freeing --> memory leak
+*   
+*   Valgrind:
+*   - Can detect issues when you are not checking the return value of malloc
+*       - If you pass to malloc a value too large for it to allocate, it will return 0
+*   - Can detect if allocated memory has not been initialized(zeroed)
+*   - Can detect when you are referencing free'd/null memory
+*   - Can detect when you are freeing the same memory more than once
+*   - Can detect memory leaks in a program
+*   - Can detect overlapping memory writes (strcpy)
 */

@@ -48,6 +48,6 @@ int main(void)
 *   - PLT (Procedure Linkage Table): responsible for calling the dynamic linker with the function name that should be resolved
 *
 *   GOT Exploit
-*   - Similar to string buffer overflow, ... (NEED TO GO OVER VIDEO FOR THIS PART)
+*   - Similar to string buffer overflow, overwrite an instruction's linked address to something like execve to run a shell
 *
 */
