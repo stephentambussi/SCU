@@ -1,5 +1,5 @@
 /* Lecture 2 - Stack smashing exploit
-*  - Need to compile with -fno-stack-protector
+*  - Need to compile with -fno-stack-protector, -z execstack (allows stack to run program)
 */
 #include <stdio.h>
 #include <stdlib.h>
