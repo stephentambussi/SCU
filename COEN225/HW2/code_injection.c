@@ -25,5 +25,5 @@ int main (void)
     exit(-1);
   }
   else
-    puts("Access granted"); //0x0804856a --> return address
+    puts("Access granted");
 }
