@@ -1,0 +1,80 @@
+
+<!-- saved from url=(0048)https://www.engr.scu.edu/~slam3/coen225/hw3.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>Homework 3 (5%) ***must submit work individually ***
+Due: Nov 1, 2022 12am by email, to slam3@scu.edu
+<br>
+<pre>PROBLEM 1: Fixing Heap Memory Errors
+
+Given the following program
+<a href="https://www.engr.scu.edu/~slam3/coen225/uaf.c">
+uaf.c
+</a>
+It has an use-after-free error and a multiple free error.
+Fix the errors, perhaps with the help of Valgrind.
+Add some comment in the file uaf.c describing the errors.
+
+Submit the fixed C program uaf.c as an attachment to the email.
+---------------------------------------------------------------------------------------
+PROBLEM 2 : Fixing Valgrind reported errors in 10 small C++ programs.
+
+BTW, Valgrind has been installed on the COEN lab machines as well as the Virtualbox VM.
+
+Given the following archive/.tar file, which contains 10 C++ programs:
+<a href="https://www.engr.scu.edu/~slam3/coen225/ValgrindHW.tar">
+Valgrind.tar
+</a>
+Unpack the archive by:
+
+$ tar xvf Valgrind.tar
+
+to look at the 10 programs.
+Compile them one at a time using g++ like:
+
+$ g++ -g exp1.cc
+
+and run the executables by:
+
+$ valgrind ./a.out
+
+Per file, observe the errors and fix them, and add comments in the file describing the errors and fixes.
+If Valgrind does not report any errors, inspect the program to see if the program has an error
+and explain why Valgrind does/does not report any errors.
+
+Submit the 10 C++ programs by attaching the 10 files as attachments to the email.
+---------------------------------------------------------------------------------------
+PROBLEM 3 (extra credit, a popular interview question) Linked List Deletion
+
+Given the following linked list:
+
+head             p
+|                |
+v                v
+[data=1,next]-&gt;[data=2,next]-&gt;[data=3,next=NULL]
+
+with the following definitions/declarations:
+
+struct linkrecord {
+  int data;
+  struct linkrecord *next;
+};
+struct linkrecord *head;
+struct linkrecord *p;
+
+You are given pointer p, NOT pointer head, to call function delete() like:
+
+delete(p);
+
+Write the function delete resulting in the above list becoming:
+
+[data=1,next]-&gt;[data=3,next=NULL]
+
+void delete(struct linkerecord *p)
+{
+...
+}
+
+Submit the body of function delete in a file named problem3.c, attached to the email.
+
+***Send one single email to slam3@scu.edu with attachments corresponding to the problems.
+Email subject should have: hw3 solution from <your name="">
+</your></pre></body></html>
