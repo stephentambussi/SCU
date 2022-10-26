@@ -43,3 +43,9 @@ int main()
         }
     } while (1);
 }
+
+/*
+*   It has an use-after-free error and a multiple free error.
+*   Fix the errors, perhaps with the help of Valgrind.
+*   Add some comment in the file uaf.c describing the errors.
+*/
