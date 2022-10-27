@@ -118,17 +118,35 @@ unsigned: 0: 00000000000000000000000000000000
 *   Format String Vulnerabilities
 *   -----------------------------------------
 *   printf() call on the stack
-*   - TODO: go over
+*   - In memory, as seen in gdb, format specifier address is replaced with values for format specifier 
+*     which are immediately after the format specifier address in memory.
+*   - When one of the values for 2 format specifiers is missing in the printf statement, the 2nd
+*     specifier value is still retrieved from the next memory word on the stack. This leads to 
+*     the printf statement displaying a value or address from the runtime stack --> VULNERABILITY
+*   - This vulnerability can be expanded to print the entire runtime stack.
 *   
 *   Displaying stack data with printf format strings
-*   - TODO: go over
+*   - Using printf vulnerability, Duo Factor Authentication app using gets(choice) and then 
+*     printf(choice) if user entered wrong choice can be exploited. printf(choice) treats choice
+*     like a format specifier so user can pass in "%x,%x,..." to print runtime stack values.
+*     - Printing stack values --> hacker can find return address for function to perform code/arc injection
 *   
 *   Arbitary writing to memory with %n format specifier
-*   - TODO: go over
+*   - %n format specifier loads into variable pointed by corresponding argument. The loading is done with a value
+*     which is equal to the number of characters printed by printf() before the occurrence of %n.
+*     - %n does not print anything.
+*   Ex: 
+*     printf("The value of %ns : ", &s);
+*     printf("%d", s);
+*   Output: The value of s : 13 --> 13 is the num of characters before the occurrence of %n
+*   - See video for exploit that combines %n and printf vulnerability
 *   
 *   Duo Factor Authentication App Exploit
-*   - TODO: go over
+*   - Using the above exploit to write to memory with %n specifier, duo authentication app can
+*     be exploited to authenticate without actually authenticating on app.
 *   
 *   Using printf to overwrite GOT entry
-*   - TODO: go over
+*   - printf has limitations on how much it can write to memory with %n specifier
+*     - Using divide and conquer, portions of the destination address can be written
+*       at a time rather than all at once
 */
