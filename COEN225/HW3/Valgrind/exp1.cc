@@ -11,8 +11,8 @@ int main() {
 }
 /*
 *   Error:
-*   Valgrind reports that 100 bytes are lost as they are allocated with the new keyword,
-*   but the program exits before they are freed. They are never deleted.
+*   Valgrind reports that 100 bytes are lost as they are allocated with the new keyword
+*   and the program exits before the allocated memory is freed.
 *
 *   Fix:
 *   Free the memory before the program returns. See above code

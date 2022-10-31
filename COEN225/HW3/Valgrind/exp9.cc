@@ -24,8 +24,8 @@ int main() {
 *   the allocated memory.
 *
 *   Fix:
-*   There are a few methods to resolve this issue. The easiest is to simply comment out the
-*   offending line "a+=3". However, if the program behavior is wished to be maintained then 
+*   There are a few methods to resolve this issue. The easiest way is to simply comment out the
+*   offending line "a+=3". However, if the program behavior is wished to be maintained, then 
 *   a better solution is to have another ptr variable point to the first block of allocated
 *   memory and use that to de-allocate the array when ready. This solution is shown above.
 */

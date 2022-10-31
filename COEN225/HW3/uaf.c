@@ -54,7 +54,7 @@ int main()
 *   Use-after-free error:
 *   If some user enters their name and credit card info and then enters 3 for "done",
 *   another user can immediately after use their credit card info for themself by skipping
-*   entering their credit card and just enter 2. This is because the cptr value is not 
+*   entering their credit card and entering 2. This is because the cptr value is not 
 *   being changed (set to NULL) in the done step so even after freeing the struct, cptr still 
 *   points to the freed block of memory.
 *   To resolve this bug, I simply set cptr = NULL after it is freed when the user enters 3.
@@ -62,7 +62,7 @@ int main()
 *   they are not attempting to access the NULL value of cptr after it is freed.
 *
 *   Multiple free error:
-*   Similar to the use-after-free error, the multiple free would occur when another user
+*   Similar to the use-after-free error, the multiple free would occur when the next user
 *   attempts to use the previous user's credit card information for themself. After this
 *   malicious user is done using the previous user's credit card info and they enter 3 to be
 *   done, the program would free the already freed struct causing a double free. 
