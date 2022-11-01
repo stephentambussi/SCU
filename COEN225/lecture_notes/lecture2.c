@@ -45,11 +45,24 @@ int main(void) //function and its parameters = STACK
 *   Stack-based exploit: Stack Smashing
 *   - Can overwrite function's return address in stack --> effectively redirecting to any code you want
 *       - Can also use this to modify variables
+*
+*   Arc Injection   
+*   - Modifies execution flow of running program by redirecting the currently running program
+*     to another function/method currently in its memory space.
+*     Ex:
+*       [12 bytes for Password[12]] [12 bytes for padding   ] [return address]...
+*                                                                |            
+*        main function line 20 <----------------------------------
 *   
-*   Code-injection
+*   Code Injection
 *   - Adding code after victim code in stack & then change return address to point to injected code
 *       - Injected code needs to be compiled into object code first and stack needs to be executable
-*   
+*     Ex:
+*       [12 bytes for Password[12]] [12 bytes for padding   ] [return address] [injected object code]...
+*                                                               |                ^
+*                                                               |                |
+*                                                               ------------------   
+*
 *   Misc.
 *   - '-fno-stack-protector' arg will remove the stack canary that prevents stack exploits
 *   
