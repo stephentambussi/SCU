@@ -9,6 +9,8 @@
 
 int main(void)
 {
+    float f = 1.0 * 3;
+    printf("%f\n", f);
     return 0;
 }
 
@@ -55,12 +57,13 @@ unsigned: 0: 00000000000000000000000000000000
 
 . mixed operands operations
   example: float f = 1.0 * 3;
+  - 3 is converted to a float
 
-. ranks: 
+. ranks: integers in an operation will be promoted to the largest int type present according to the below hierarchy
   rank(long long) > rank(int) > rank(short) > rank(char)
 
 . promotion 
-  example: int i=2147483657; long long l = i+1LL;
+  example: int i=2147483647; long long l = i+1LL;
 
 . truncation 
   example: short s; int i=0x10000; s = i;
@@ -69,7 +72,7 @@ unsigned: 0: 00000000000000000000000000000000
   example: int i=2147483647; long long l = (long long)i+1;
 
 . unsigned to signed 
-  bit patterns preserved value > 2^31-1 becomes negative
+  bit patterns preserved value --> (2^31)-1 becomes negative
 
 . signed to unsigned: 
   bit patterns preserved. negative signed become large positive

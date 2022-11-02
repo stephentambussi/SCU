@@ -11,7 +11,7 @@ int main(void) {
   unsigned int uaddition_result = num3 + num4;
   printf ("%u\n", uaddition_result);
     
-  printf ("%d\n", num1+num4);
+  printf ("%d\n", num1+num4); //result of signed + unsigned = signed result (num4 converted to signed)-->types converted from left to right
   printf ("%d\n", -2147483648);
   printf ("%d\n", 2147483648);
   printf ("%u\n", num1+num4);
