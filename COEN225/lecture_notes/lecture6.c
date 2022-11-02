@@ -84,7 +84,7 @@ unsigned: 0: 00000000000000000000000000000000
 *   s = 0xbabe (16 bits)        s = 0xffffbabe (16 bits)
 *   c = 0xbe (8 bits)           c = 0xffffffbe (8 bits)
 *   - Unsigned truncation from long --> short --> char cuts off values from the left
-*   - Signed truncation from long --> short --> char makes values more negative from the left
+*   - Signed truncation from long --> short --> char makes values negative from the left
 *   TruncateError1.c output:
 *   cresult=-66
 *   - c1 + c2 = 190 --> this is the unsigned value, but -66 is the signed value.
