@@ -17,7 +17,7 @@ int main() {
 }
 /*
 *   Error:
-*   Valgrind reports 1 error. There is a memory leak due to a invalid delete call. The delete call
+*   Valgrind reports 1 error. There is a memory leak due to an invalid delete call. The delete call
 *   is invalid because immediately before it is called, the ptr to the array of long doubles is
 *   incremented to instead be pointing to 3 blocks after the first block of the array. For the 
 *   delete call to work correctly, it must be passed a ptr that points to the first block of
