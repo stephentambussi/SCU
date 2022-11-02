@@ -66,7 +66,7 @@ unsigned: 0: 00000000000000000000000000000000
   example: short s; int i=0x10000; s = i;
 
 . cast 
-  example: int i=2147483657; long long l = (long long)i+1;
+  example: int i=2147483647; long long l = (long long)i+1;
 
 . unsigned to signed 
   bit patterns preserved value > 2^31-1 becomes negative
@@ -112,7 +112,7 @@ unsigned: 0: 00000000000000000000000000000000
 *
 *   Array Bound Index Overflow
 *   - Using gdb and looking at the mem layout, it can be seen that the balance variable can be
-*     manipulated by going outside the array bounds of itemlist[0-4]. By passing the program "5 0", 
+*     overwritten by going outside the array bounds of itemlist[0-4]. By passing the program "5 0", 
 *     the balance can be changed to be 0.
 *
 *   Format String Vulnerabilities

@@ -181,6 +181,12 @@ int main(void)
 *   --------------------------------------------------------------
 *   1) Heap Unlink Exploit --> no longer working (it was patched)
 *   2) Use after Free Exploit
+*       - After freeing memory pointed to by a ptr, if the ptr is not set to NULL, then it still
+*         points to that block of memory which has not been cleared yet. This is known as a dangling pointer. 
+*         A malicious user can then exploit this to acccess the data at that memory.
+*       - Another way an attacker can exploit this is by allocating the same chunk of freed memory
+*         to their own data/code which the dangling pointer now points to. Allowing the attacker to
+*         perform arbitrary code execution.
 *       - Based on exposing private information --> check above code to see exploit in action
 *
 *   Heap Exploits Assist
