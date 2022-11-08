@@ -13,28 +13,11 @@ int main(void)
 }
 
 /*
-*   Format String Vulnerabilities
-*   -----------------------------------------
-*   Duo Factor Authentication App Exploit
-*   - TODO
-*
-*   Using printf to overwrite GOT entry
-*   - TODO
-*   
 *   Homework 4 Discussion
 *   -----------------------------------------
 *   Dissecting GCC
 *   - TODO
 *
 *   Shared/Dynamic Linking vs Static Linking
-*   - TODO
-*
-*   Intercepting dynamic library functions
-*   - TODO
-*   
-*   Displaying the runtime stack programmatically
-*   - TODO
-*
-*   The check_leak.c starter code
 *   - TODO
 */
