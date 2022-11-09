@@ -13,15 +13,35 @@
 #include <string.h>
 #include <unistd.h>
 
+/*  GENERAL TODO:
+*   - display where malloc, realloc, calloc, free are called in the program (line num)
+*   - Print out PID of target process like in valgrind (getpid())
+*/
+
 /*  generate_stack_trace()
 *   Generates trace at point of call, into tmpfile, and places
 *   the trace in the parameter backtracestr
 */
 void generate_stack_trace(char *tmpfile, char *backtracestr)
 {
-    /*  TODO:
-    *   - print backtrace to a file
-    *   - ASK QUESTION ABOUT WHAT EXACTLY TO DO FOR EC SINCE IT IS UNCLEAR
+    /*  EXTRA CREDIT TODO:
+    *   - Show the function names and line numbers
+    *   - To do so:
+    *       - parse the backtrace.txt to get the executable name and address offset to pass to gdb
+    *       - Call system("gdb -batch -ex 'file a.out' -ex 'info line * 0x80484a6' > /tmp/backtrace.gdbout");
+    *           - This will generate the function names and line number
+    *       - Get the function names and line numbers from .gdbout
+    *       - NOTE: need to subtract 1 from the start of the current line
+    *            For example,
+    *            Given: ./a.out[0x80484a6]
+    * 
+    *            $ gdb -batch -ex "file a.out" -ex "info line * 0x80484a6"
+    *            Line 14 of "doublefree.c" starts at address 0x80484a1  and ends at 0x80484ab .
+    * 
+    *            ***Line 14 is the line after the call.  To get the line of the call, replace 0x80484a6 by 0x80484a0.
+    * 
+    *            $ gdb -batch -ex "file a.out" -ex "info line * 0x80484a0"
+    *            Line 13 of "doublefree.c" starts at address 0x804849a  and ends at 0x80484a0 .
     */
     void *array[10];
     char **strings;
@@ -152,7 +172,7 @@ void free(void *p)
         /*
           uncomment the next 2 lines to see how generate_stack_trace() works
         */
-        //generate_stack_trace("/tmp/backtrace.txt", backtracestr);
+        //generate_stack_trace("/tmp/backtrace.txt", backtracestr); //TODO: change file path
         //fprintf(stderr, "%s", backtracestr);
         recursively_called = 0;
     }
@@ -183,7 +203,7 @@ void __attribute__((destructor)) postmain()
     Instead, you will show the invalid free attempts at the summary.
 
     Valgrind Output for Comparison:
-
+  PID
 ==1518== Memcheck, a memory error detector
 ==1518== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
 ==1518== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
