@@ -70,7 +70,7 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
 */
 void __attribute__((constructor)) premain()
 {
-    //TODO: initialize check_leak data structure (linked list)
+    //TODO: initialize check_leak data structure (linked list) --> DO THIS FIRST
     fprintf(stderr, "premain\n");
 }
 
