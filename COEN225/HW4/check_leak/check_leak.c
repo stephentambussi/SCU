@@ -9,6 +9,7 @@
  *      2) Compile one of the tests: "gcc -g test1.c"
  *      3) Run a.out using custom library: "LD_PRELOAD=$PWD/check_leak.so ./a.out"
  */
+//NOTE: this program is a prototype, it only needs to work on the 5 test cases
 #define _GNU_SOURCE
 #define N 10
 #include <execinfo.h>
@@ -230,12 +231,12 @@ void *malloc(size_t size)
     int f;
     if (!recursively_called) //first time called on runtime stack
     {
-        //TODO: check this logic
+        //TODO: use backtrace() to determine if printf called malloc --> if so, allocate mem for printf, but immediately set it as freed
         recursively_called = 1;
         if (!real_malloc)
             real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker(only happens once due to static ptr)
         p = real_malloc(size);
-        
+
         if(lastUsed < N)
         {
             blocks[lastUsed].block_size = (int) size;
@@ -275,7 +276,7 @@ void free(void *p)
         recursively_called = 1;
         if (!real_free)
             real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker(only happens once due to static ptr) 
-    
+
         int flag = 0;
         for(int x = 0; x < N; x++)
         {

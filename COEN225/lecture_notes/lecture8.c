@@ -43,7 +43,6 @@ int main()
 *       - Signals
 *       - Message queues
 *       - Shared memory (mmap)
-*           - TODO: review code for this part of lecture
 *   
 *   Thread Creation
 *   - pthreads
@@ -52,6 +51,7 @@ int main()
 *   Data races or Race condition (caused by no synchronization)
 *   - Occurs when multiple threads or processes try to access a shared variable
 *   - Helgrind: thread error detector that is an addon to valgrind
-*       - Can detect data race conditions in programs
+*       - Can detect data race conditions and deadlocks in programs
 *   - condition variables: used to signal to other threads that a resource is available
+*   - Deadlocks: occurs when multiple threads are holding mutually desired resources
 */
