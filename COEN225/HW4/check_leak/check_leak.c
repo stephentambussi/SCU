@@ -2,7 +2,7 @@
  *   Stephen Tambussi
  *   COEN225
  *   HW4: Memory Leak Detector
- *   11/22/22
+ *   11/29/22
  * 
  *   TO RUN:
  *      1) Run "make"
@@ -39,7 +39,6 @@ char pid[10];
 
 /*  GENERAL TODO:
 *   - display where malloc, realloc, calloc, free are called in the program (line num)
-*   - Print out PID of target process like in valgrind (getpid())
 */
 
 /*  generate_stack_trace()
@@ -94,7 +93,6 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
 */
 void __attribute__((constructor)) premain()
 {
-
     for(int x = 0; x < N; x++) //initialize each block of struct array
     {
         blocks[x].block_size = 0;
@@ -103,8 +101,10 @@ void __attribute__((constructor)) premain()
     }
     memset(pid, ' ', 10);
     sprintf(pid, "==%ld==", (long)getpid());
-    //fprintf(stderr, "premain\n");
-    //fprintf(stderr, "%s\n", pid); --> Used for testing
+    
+    fprintf(stderr, "%s A Memory Error Detector Program\n", pid);
+    fprintf(stderr, "%s Created by Stephen Tambussi for COEN225\n", pid);
+    fprintf(stderr, "%s\n", pid);
 }
 
 /*  realloc()
@@ -118,11 +118,56 @@ void *realloc(void *ptr, size_t new_size)
     void *p;
     if (!recursively_called) //first time called on runtime stack
     {
-        //TODO: do leak detection logic here
+        //TODO: check logic here
         recursively_called = 1;
         if (!real_realloc)
             real_realloc = dlsym(RTLD_NEXT, "realloc"); //set to real realloc function via dynamic linker(only happens once due to static ptr)
         p = real_realloc(ptr, new_size);
+
+        // Two cases: ptr is NULL or it is not
+        // If ptr is NULL, realloc acts like malloc
+        // If ptr is not NULL, resize previously allocated mem
+        if(ptr == NULL)
+        {
+            if(lastUsed < N)
+            {
+                blocks[lastUsed].block_size = (int) new_size;
+                blocks[lastUsed].memAddr = p;
+                blocks[lastUsed].freed = 0;
+                lastUsed++;
+
+                numAllocs++;
+                allocatedBytes += (int) new_size;
+            }
+            else
+            {
+                fprintf(stderr, "TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+            }
+        }
+        else
+        {
+            int flag = 0;
+            for(int x = 0; x < N; x++)
+            {
+                if(ptr == blocks[x].memAddr && blocks[x].freed == 0)
+                {
+                    int previous_size = blocks[x].block_size;
+                    blocks[x].block_size = (int) new_size;
+
+                    allocatedBytes += (int) new_size;
+                    numAllocs++;
+                    flag = 1;
+                    break;
+                }
+            }
+
+            if(flag == 0) // If the loop finished without matching any address
+            {
+                // Program is attempting to realloc with invalid address
+                fprintf(stderr, "%s Invalid address with realloc(): %p\n", pid, p); //TODO: get line that this is called
+            }
+        }
+
         recursively_called = 0;
     }
     else //not first time on runtime stack
@@ -143,11 +188,27 @@ void *calloc(size_t num, size_t size)
     void *p;
     if (!recursively_called) //first time called on runtime stack
     {
-        //TODO: do leak detection logic here
+        //TODO: check this logic
         recursively_called = 1;
         if (!real_calloc)
             real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker(only happens once due to static ptr)
         p = real_calloc(num, size);
+
+        if(lastUsed < N)
+        {
+            blocks[lastUsed].block_size = (int) size * num; //This is the primary difference between malloc
+            blocks[lastUsed].memAddr = p;
+            blocks[lastUsed].freed = 0;
+            lastUsed++;
+
+            numAllocs++;
+            allocatedBytes += size * num;
+        }
+        else
+        {
+            fprintf(stderr, "TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+        }
+
         recursively_called = 0;
     }
     else //not first time on runtime stack
@@ -183,14 +244,13 @@ void *malloc(size_t size)
             lastUsed++;
 
             numAllocs++;
-            allocatedBytes += size;
+            allocatedBytes += (int) size;
         }
         else
         {
             fprintf(stderr, "TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
         }
 
-        //fprintf(stderr, "malloc(%d) = %p\n", size, p); --> REMOVE LATER
         recursively_called = 0;
     }
     else //not first time on runtime stack
@@ -204,6 +264,7 @@ void *malloc(size_t size)
 *   Intercepts calls to the real free function to track heap memory
 *   chunks
 */
+//QUESTION: how do we deal with printf functions that call malloc and free?
 void free(void *p)
 {
     static int recursively_called = 0;
@@ -220,7 +281,7 @@ void free(void *p)
         {
             if(p == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free
             {
-                fprintf(stderr, "%s\tInvalid free(): free(%p)\n", pid, p); //TODO: get line that this is called
+                fprintf(stderr, "%s Invalid free(): free(%p)\n", pid, p); //TODO: get line that this is called
                 numFrees++;
                 flag = 1;
                 break;
@@ -228,7 +289,7 @@ void free(void *p)
             else if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
             {
                 real_free(p); //first call the real free
-                blocks[x].freed = 1; //set to already freed
+                blocks[x].freed = 1; //set to freed state
                 numFrees++;
                 flag = 1;
                 break;
@@ -239,7 +300,7 @@ void free(void *p)
         {
             // Program is attempting to free with invalid address or
             // on memory that was never allocated before
-            fprintf(stderr, "%s\tInvalid address with free(): %p\n", pid, p); //TODO: get line that this is called
+            fprintf(stderr, "%s Invalid address with free(): %p\n", pid, p); //TODO: get line that this is called
         }
 
         /*
@@ -260,9 +321,7 @@ void free(void *p)
 */
 void __attribute__((destructor)) postmain()
 {
-    //TODO: print out summary before program exit
-    // - Compare difference between allocatedBytes and blocks still present in LL (by iterating through)
-    fprintf(stderr, "postmain\n");
+    //TODO: Finalize summary
     int leak_amount = 0;
     int leaked_blocks = 0;
     for(int x = 0; x < N; x++)
@@ -275,9 +334,12 @@ void __attribute__((destructor)) postmain()
     }
     
     //Print Summary
-    fprintf(stderr, "%s\tHEAP SUMMARY:\n", pid);
-    fprintf(stderr, "%s\t  In use at program exit: %d bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
-    fprintf(stderr, "%s\t  Total heap usage: %d allocs, %d frees, %d bytes allocated\n", pid, numAllocs, numFrees, allocatedBytes);
+    fprintf(stderr, "%s\n", pid);
+    fprintf(stderr, "%s HEAP SUMMARY:\n", pid);
+    fprintf(stderr, "%s  In use at program exit: %d bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
+    fprintf(stderr, "%s  Total heap usage: %d allocs, %d frees, %d bytes allocated\n", pid, numAllocs, numFrees, allocatedBytes);
+    //TODO: explicitly list each memory loss and where it was in the program
+    //TODO: explicitly print out if there was a leak based upon above data and say how much it was
 }
 
 /*  Tasks:

@@ -6,7 +6,7 @@ void foo()
   void *ptr = malloc(16);
   void *ptr2 = malloc(32);
   free(ptr);
-  free(ptr); //Not originally in test --> remove later
+  //free(ptr); //Not originally in test --> remove later
 }
 int main()
 {
