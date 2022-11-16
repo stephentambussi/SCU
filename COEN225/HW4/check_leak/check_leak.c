@@ -3,8 +3,14 @@
  *   COEN225
  *   HW4: Memory Leak Detector
  *   11/22/22
+ * 
+ *   TO RUN:
+ *      1) Run "make"
+ *      2) Compile one of the tests: "gcc -g test1.c"
+ *      3) Run a.out using custom library: "LD_PRELOAD=$PWD/check_leak.so ./a.out"
  */
 #define _GNU_SOURCE
+#define N 10
 #include <execinfo.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -12,6 +18,24 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+// Linked list to track allocated blocks
+struct allocatedMem {
+    int block_size; // MAYBE: change to size_t
+    void *memAddr; // address that points to allocated block
+    int freed; // -1 = never used | 0 = still allocated | 1 = already freed
+};
+
+struct allocatedMem blocks[N]; // start with 10
+int lastUsed = 0; // Keeps track of last allocated block index (for efficiency purposes)
+
+// Global variables to keep track of total allocated mem, allocs, and frees
+int numAllocs = 0;
+int numFrees = 0;
+int allocatedBytes = 0; //This keeps track of total heap usage, regardless of frees
+
+// Misc. global variables
+char pid[10];
 
 /*  GENERAL TODO:
 *   - display where malloc, realloc, calloc, free are called in the program (line num)
@@ -26,7 +50,7 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
 {
     /*  EXTRA CREDIT TODO:
     *   - Show the function names and line numbers
-    *   - To do so:
+    *   - How to do so:
     *       - parse the backtrace.txt to get the executable name and address offset to pass to gdb
     *       - Call system("gdb -batch -ex 'file a.out' -ex 'info line * 0x80484a6' > /tmp/backtrace.gdbout");
     *           - This will generate the function names and line number
@@ -70,8 +94,17 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
 */
 void __attribute__((constructor)) premain()
 {
-    //TODO: initialize check_leak data structure (linked list) --> DO THIS FIRST
-    fprintf(stderr, "premain\n");
+
+    for(int x = 0; x < N; x++) //initialize each block of struct array
+    {
+        blocks[x].block_size = 0;
+        blocks[x].memAddr = NULL;
+        blocks[x].freed = -1;
+    }
+    memset(pid, ' ', 10);
+    sprintf(pid, "==%ld==", (long)getpid());
+    //fprintf(stderr, "premain\n");
+    //fprintf(stderr, "%s\n", pid); --> Used for testing
 }
 
 /*  realloc()
@@ -136,13 +169,28 @@ void *malloc(size_t size)
     int f;
     if (!recursively_called) //first time called on runtime stack
     {
-        //TODO: do leak detection logic here
+        //TODO: check this logic
         recursively_called = 1;
         if (!real_malloc)
             real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker(only happens once due to static ptr)
-
         p = real_malloc(size);
-        fprintf(stderr, "malloc(%d) = %p\n", size, p);
+        
+        if(lastUsed < N)
+        {
+            blocks[lastUsed].block_size = (int) size;
+            blocks[lastUsed].memAddr = p;
+            blocks[lastUsed].freed = 0;
+            lastUsed++;
+
+            numAllocs++;
+            allocatedBytes += size;
+        }
+        else
+        {
+            fprintf(stderr, "TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+        }
+
+        //fprintf(stderr, "malloc(%d) = %p\n", size, p); --> REMOVE LATER
         recursively_called = 0;
     }
     else //not first time on runtime stack
@@ -163,12 +211,37 @@ void free(void *p)
     char backtracestr[4096];
     if (!recursively_called) //first time called on runtime stack
     {
-        //TODO: do leak detection logic here
         recursively_called = 1;
         if (!real_free)
-            real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker(only happens once due to static ptr)
-        real_free(p);
-        fprintf(stderr, "free(%p)\n", p);
+            real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker(only happens once due to static ptr) 
+    
+        int flag = 0;
+        for(int x = 0; x < N; x++)
+        {
+            if(p == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free
+            {
+                fprintf(stderr, "%s\tInvalid free(): free(%p)\n", pid, p); //TODO: get line that this is called
+                numFrees++;
+                flag = 1;
+                break;
+            }
+            else if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
+            {
+                real_free(p); //first call the real free
+                blocks[x].freed = 1; //set to already freed
+                numFrees++;
+                flag = 1;
+                break;
+            }
+        }
+
+        if(flag == 0) // If the loop finished without matching any address
+        {
+            // Program is attempting to free with invalid address or
+            // on memory that was never allocated before
+            fprintf(stderr, "%s\tInvalid address with free(): %p\n", pid, p); //TODO: get line that this is called
+        }
+
         /*
           uncomment the next 2 lines to see how generate_stack_trace() works
         */
@@ -188,7 +261,23 @@ void free(void *p)
 void __attribute__((destructor)) postmain()
 {
     //TODO: print out summary before program exit
+    // - Compare difference between allocatedBytes and blocks still present in LL (by iterating through)
     fprintf(stderr, "postmain\n");
+    int leak_amount = 0;
+    int leaked_blocks = 0;
+    for(int x = 0; x < N; x++)
+    {
+        if(blocks[x].freed == 0) // find the blocks that are still allocated
+        {
+            leak_amount += blocks[x].block_size;
+            leaked_blocks++;
+        }
+    }
+    
+    //Print Summary
+    fprintf(stderr, "%s\tHEAP SUMMARY:\n", pid);
+    fprintf(stderr, "%s\t  In use at program exit: %d bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
+    fprintf(stderr, "%s\t  Total heap usage: %d allocs, %d frees, %d bytes allocated\n", pid, numAllocs, numFrees, allocatedBytes);
 }
 
 /*  Tasks:
