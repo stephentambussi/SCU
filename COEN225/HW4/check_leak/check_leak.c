@@ -11,20 +11,23 @@
  */
 //NOTE: this program is a prototype, it only needs to work on the 5 test cases
 #define _GNU_SOURCE
-#define N 10
+#define N 40
+#define DEBUG 0 // 0 = debug messages off | 1 = debug messages on
+
 #include <execinfo.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
 
 // Linked list to track allocated blocks
 struct allocatedMem {
-    int block_size; // MAYBE: change to size_t
+    int block_size; // TODO: change to size_t
     void *memAddr; // address that points to allocated block
-    int freed; // -1 = never used | 0 = still allocated | 1 = already freed
+    int freed; // -1 = never used | 0 = still allocated | 1 = already freed 
 };
 
 struct allocatedMem blocks[N]; // start with 10
@@ -37,6 +40,8 @@ int allocatedBytes = 0; //This keeps track of total heap usage, regardless of fr
 
 // Misc. global variables
 char pid[10];
+int this_is_printf = 0; // This flag tells malloc that the calling function is printf
+void *printf_buffer_addr = NULL; // This tells the program the mem addr of the printf buffer for cleanup
 
 /*  GENERAL TODO:
 *   - display where malloc, realloc, calloc, free are called in the program (line num)
@@ -48,10 +53,10 @@ char pid[10];
 */
 void generate_stack_trace(char *tmpfile, char *backtracestr)
 {
+    fprintf(stderr, "start of generate_stack_trace\n");
     /*  EXTRA CREDIT TODO:
     *   - Show the function names and line numbers
     *   - How to do so:
-    *       - parse the backtrace.txt to get the executable name and address offset to pass to gdb
     *       - Call system("gdb -batch -ex 'file a.out' -ex 'info line * 0x80484a6' > /tmp/backtrace.gdbout");
     *           - This will generate the function names and line number
     *       - Get the function names and line numbers from .gdbout
@@ -60,12 +65,12 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
     *            Given: ./a.out[0x80484a6]
     * 
     *            $ gdb -batch -ex "file a.out" -ex "info line * 0x80484a6"
-    *            Line 14 of "doublefree.c" starts at address 0x80484a1  and ends at 0x80484ab .
+    *            Line 14 of "doublefree.c" starts at address 0x80484a1  and ends at 0x80484ab.
     * 
     *            ***Line 14 is the line after the call.  To get the line of the call, replace 0x80484a6 by 0x80484a0.
     * 
     *            $ gdb -batch -ex "file a.out" -ex "info line * 0x80484a0"
-    *            Line 13 of "doublefree.c" starts at address 0x804849a  and ends at 0x80484a0 .
+    *            Line 13 of "doublefree.c" starts at address 0x804849a  and ends at 0x80484a0.
     */
     void *array[10];
     char **strings;
@@ -79,14 +84,40 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
         exit(0);
     }
     size = backtrace(array, 10);
-    backtrace_symbols_fd(array, size, f);
+    backtrace_symbols_fd(array, size, f); // This will write the backtrace to the tmpfile
     close(f);
     backtracestr[0] = 0;
     fp = fopen(tmpfile, "r");
+    //while(fgets(line, 256, fp))
+    //{
+        //char filename[10];
+        //char *offset;
+        //char system_str[100];
+        //For simplicity, making assumption that executable name is always "a.out"
+        //if(strncmp(line, "./a.out", 7) == 0)
+        //{
+            //strcpy(filename, "a.out");
+            //offset = strtok(line, "[");
+            //offset = strtok(NULL, "]");
+            
+            //sprintf(system_str, "gdb -batch -ex 'file %s' -ex 'info line * %s' > backtrace.gdbout", filename, offset);
+            //system(system_str);
+            //fprintf(stderr, "%s\n", system_str);
+        //}
+        //if(strncmp(line, "/lib/", 5) == 0) //stop detector
+        //{
+        //    break;
+        //}
+    //}
+    /*
+    fp = fopen(tmpfile, "r");
+    // The below will read from the tmpfile and add to the backtracestr --> THIS SHOULD BE DONE LAST
     while (fgets(line, 256, fp))
     {
         strcat(backtracestr, line);
     }
+    */
+    fclose(fp);
 }
 
 /*  premain()
@@ -100,12 +131,38 @@ void __attribute__((constructor)) premain()
         blocks[x].memAddr = NULL;
         blocks[x].freed = -1;
     }
+    numAllocs = 0;
+    numFrees = 0;
+    allocatedBytes = 0;
     memset(pid, ' ', 10);
     sprintf(pid, "==%ld==", (long)getpid());
     
     fprintf(stderr, "%s A Memory Error Detector Program\n", pid);
     fprintf(stderr, "%s Created by Stephen Tambussi for COEN225\n", pid);
     fprintf(stderr, "%s\n", pid);
+}
+
+/*  printf()
+*   Intercepts calls to the real printf function to help track heap memory.
+*   By default, printf allocates a buffer which affected the program's memory
+*   tracking since it strangely did not also call free to release the buffer.
+*   This intercepting function will call free for the allocated printf buffer.
+*/
+int printf(const char *format, ...)
+{
+    this_is_printf = 1;
+    int result;
+    va_list ap; // This means there can be many additional args following *format
+    va_start(ap, format);
+
+    if(DEBUG && printf_buffer_addr == NULL) 
+        fprintf(stderr, "++DEBUG++ Before printf buffer malloc\n");
+
+    result = vprintf(format, ap); // TODO: try this with vfprintf (won't call malloc)
+    va_end(ap);
+
+    this_is_printf = 0;
+    return result;
 }
 
 /*  realloc()
@@ -125,6 +182,8 @@ void *realloc(void *ptr, size_t new_size)
             real_realloc = dlsym(RTLD_NEXT, "realloc"); //set to real realloc function via dynamic linker(only happens once due to static ptr)
         p = real_realloc(ptr, new_size);
 
+        if(DEBUG) fprintf(stderr, "++DEBUG++ realloc(%p, %ld) called inside if\n", ptr, new_size);
+
         // Two cases: ptr is NULL or it is not
         // If ptr is NULL, realloc acts like malloc
         // If ptr is not NULL, resize previously allocated mem
@@ -142,7 +201,7 @@ void *realloc(void *ptr, size_t new_size)
             }
             else
             {
-                fprintf(stderr, "TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+                fprintf(stderr, "REALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
             }
         }
         else
@@ -173,6 +232,7 @@ void *realloc(void *ptr, size_t new_size)
     }
     else //not first time on runtime stack
     {
+        if(DEBUG) fprintf(stderr, "++DEBUG++ realloc(%p, %ld) called inside else\n", ptr, new_size);
         p = real_realloc(ptr, new_size);
     }
     return p;
@@ -195,25 +255,28 @@ void *calloc(size_t num, size_t size)
             real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker(only happens once due to static ptr)
         p = real_calloc(num, size);
 
+        if(DEBUG) fprintf(stderr, "++DEBUG++ calloc(%ld, %ld) called inside if: %p\n", num, size, p);
+
         if(lastUsed < N)
         {
-            blocks[lastUsed].block_size = (int) size * num; //This is the primary difference between malloc
+            blocks[lastUsed].block_size = (int) num * size; //This is the primary difference between malloc
             blocks[lastUsed].memAddr = p;
             blocks[lastUsed].freed = 0;
             lastUsed++;
 
             numAllocs++;
-            allocatedBytes += size * num;
+            allocatedBytes += num * size;
         }
         else
         {
-            fprintf(stderr, "TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+            fprintf(stderr, "CALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
         }
 
         recursively_called = 0;
     }
     else //not first time on runtime stack
     {
+        if(DEBUG) fprintf(stderr, "++DEBUG++ calloc(%ld, %ld) called inside else: %p\n", num, size, p);
         p = real_calloc(num, size);
     }
     return p;
@@ -231,31 +294,34 @@ void *malloc(size_t size)
     int f;
     if (!recursively_called) //first time called on runtime stack
     {
-        //TODO: use backtrace() to determine if printf called malloc --> if so, allocate mem for printf, but immediately set it as freed
         recursively_called = 1;
         if (!real_malloc)
             real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker(only happens once due to static ptr)
         p = real_malloc(size);
+
+        if(DEBUG) fprintf(stderr, "++DEBUG++ malloc(%ld) called inside if: %p\n", size, p);
 
         if(lastUsed < N)
         {
             blocks[lastUsed].block_size = (int) size;
             blocks[lastUsed].memAddr = p;
             blocks[lastUsed].freed = 0;
-            lastUsed++;
-
-            numAllocs++;
             allocatedBytes += (int) size;
+            // Set printf_buffer_index so destructor can free the printf buffer
+            if(this_is_printf) printf_buffer_addr = p;
+            lastUsed++;
+            numAllocs++;
         }
         else
         {
-            fprintf(stderr, "TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+            fprintf(stderr, "MALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
         }
 
         recursively_called = 0;
     }
     else //not first time on runtime stack
     {
+        if(DEBUG) fprintf(stderr, "++DEBUG++ malloc(%ld) called inside else: %p\n", size, p);
         p = real_malloc(size);
     }
     return p;
@@ -265,7 +331,6 @@ void *malloc(size_t size)
 *   Intercepts calls to the real free function to track heap memory
 *   chunks
 */
-//QUESTION: how do we deal with printf functions that call malloc and free?
 void free(void *p)
 {
     static int recursively_called = 0;
@@ -276,6 +341,8 @@ void free(void *p)
         recursively_called = 1;
         if (!real_free)
             real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker(only happens once due to static ptr) 
+
+        if(DEBUG) fprintf(stderr, "++DEBUG++ free(%p) called inside if\n", p);
 
         int flag = 0;
         for(int x = 0; x < N; x++)
@@ -296,7 +363,7 @@ void free(void *p)
                 break;
             }
         }
-
+        //TODO: check if free should still be counted even if the address was incorrect like below?
         if(flag == 0) // If the loop finished without matching any address
         {
             // Program is attempting to free with invalid address or
@@ -307,22 +374,41 @@ void free(void *p)
         /*
           uncomment the next 2 lines to see how generate_stack_trace() works
         */
-        //generate_stack_trace("/tmp/backtrace.txt", backtracestr); //TODO: change file path
+        //generate_stack_trace("backtrace.txt", backtracestr);
         //fprintf(stderr, "%s", backtracestr);
         recursively_called = 0;
     }
     else //not first time on runtime stack
     {
-        real_free(p);
+        if(DEBUG) fprintf(stderr, "++DEBUG++ free(%p) called inside else\n", p);
+
+        //TODO: check this
+        for(int x = 0; x < N; x++)
+        {
+            if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
+            {
+                real_free(p); //first call the real free
+                blocks[x].freed = 1; //set to freed state
+                numFrees++;
+                break;
+            }
+        }
     }
 }
 
 /*  postmain()
-*   Called after main, used to print out the summary before program exit  
+*   Called after main, used to print out the summary before program exit 
+*   and perform relevant cleanup (printf buffer)
 */
 void __attribute__((destructor)) postmain()
 {
-    //TODO: Finalize summary
+    // Cleanup printf buffer (if it is allocated)
+    if(printf_buffer_addr != NULL)
+    {
+        free(printf_buffer_addr);
+    }
+
+    // Calculate the amount of memory leakage
     int leak_amount = 0;
     int leaked_blocks = 0;
     for(int x = 0; x < N; x++)
@@ -334,67 +420,12 @@ void __attribute__((destructor)) postmain()
         }
     }
     
-    //Print Summary
+    //TODO: Finalize summary
+    // Print Summary
     fprintf(stderr, "%s\n", pid);
     fprintf(stderr, "%s HEAP SUMMARY:\n", pid);
     fprintf(stderr, "%s  In use at program exit: %d bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
     fprintf(stderr, "%s  Total heap usage: %d allocs, %d frees, %d bytes allocated\n", pid, numAllocs, numFrees, allocatedBytes);
     //TODO: explicitly list each memory loss and where it was in the program
-    //TODO: explicitly print out if there was a leak based upon above data and say how much it was
+    //TODO: explicitly print out if there was a leak based upon above data and say how much it was (think LEAK SUMMARY from valgrind)
 }
-
-/*  Tasks:
-
-    1. Your program will print out a summary of the memory leaks in a C program. 
-    Ideally, each loss should be noted similar to the --leak-check=full valgrind option:
-    stack trace, file names and lines (see sample below).
-    However, you can submit without the stack trace if you are out of time.
-
-    2. Your program will also intercept invalid free (such as free after free) calls,
-    by preventing the free calls after the first valid free, from crashing the program.
-    Instead, you will show the invalid free attempts at the summary.
-
-    Valgrind Output for Comparison:
-  PID
-==1518== Memcheck, a memory error detector
-==1518== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
-==1518== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
-==1518== Command: ./a.out
-==1518== 
-==1518== Invalid free() / delete / delete[] / realloc()
-==1518==    at 0x402E358: free (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==1518==    by 0x8048479: foo (doublefree.c:9)
-==1518==    by 0x80484A5: main (doublefree.c:14)
-==1518==  Address 0x41f9068 is 0 bytes inside a block of size 16 free'd
-==1518==    at 0x402E358: free (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==1518==    by 0x804846B: foo (doublefree.c:8)
-==1518==    by 0x80484A5: main (doublefree.c:14)
-==1518==  Block was alloc'd at
-==1518==    at 0x402D17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==1518==    by 0x804844A: foo (doublefree.c:6)
-==1518==    by 0x80484A5: main (doublefree.c:14)
-==1518== 
-==1518== 
-==1518== HEAP SUMMARY:
-==1518==     in use at exit: 48 bytes in 2 blocks
-==1518==   total heap usage: 3 allocs, 2 frees, 64 bytes allocated
-==1518== 
-==1518== 16 bytes in 1 blocks are definitely lost in loss record 1 of 2
-==1518==    at 0x402D17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==1518==    by 0x804849A: main (doublefree.c:13)
-==1518== 
-==1518== 32 bytes in 1 blocks are definitely lost in loss record 2 of 2
-==1518==    at 0x402D17C: malloc (in /usr/lib/valgrind/vgpreload_memcheck-x86-linux.so)
-==1518==    by 0x804845A: foo (doublefree.c:7)
-==1518==    by 0x80484A5: main (doublefree.c:14)
-==1518== 
-==1518== LEAK SUMMARY:
-==1518==    definitely lost: 48 bytes in 2 blocks
-==1518==    indirectly lost: 0 bytes in 0 blocks
-==1518==      possibly lost: 0 bytes in 0 blocks
-==1518==    still reachable: 0 bytes in 0 blocks
-==1518==         suppressed: 0 bytes in 0 blocks
-==1518== 
-==1518== For counts of detected and suppressed errors, rerun with: -v
-==1518== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)
-*/

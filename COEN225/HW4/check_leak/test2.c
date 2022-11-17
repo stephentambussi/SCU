@@ -22,3 +22,11 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+
+/*  Valgrind output:
+==2595== HEAP SUMMARY:
+==2595==     in use at exit: 0 bytes in 0 blocks
+==2595==   total heap usage: 2 allocs, 2 frees, 1,052 bytes allocated
+==2595==
+==2595== All heap blocks were freed -- no leaks are possible
+*/
