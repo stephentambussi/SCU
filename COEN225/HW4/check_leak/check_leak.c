@@ -12,7 +12,7 @@
 //NOTE: this program is a prototype, it only needs to work on the 5 test cases
 #define _GNU_SOURCE
 #define N 40
-#define DEBUG 0 // 0 = debug messages off | 1 = debug messages on
+#define DEBUG 1 // 0 = debug messages off | 1 = debug messages on
 
 #include <execinfo.h>
 #include <fcntl.h>
@@ -23,14 +23,14 @@
 #include <string.h>
 #include <unistd.h>
 
-// Linked list to track allocated blocks
+// 'Linked list' to track allocated blocks
 struct allocatedMem {
     int block_size; // TODO: change to size_t
     void *memAddr; // address that points to allocated block
     int freed; // -1 = never used | 0 = still allocated | 1 = already freed 
 };
 
-struct allocatedMem blocks[N]; // start with 10
+struct allocatedMem blocks[N]; // Array of structs (Linked List) to track allocated blocks
 int lastUsed = 0; // Keeps track of last allocated block index (for efficiency purposes)
 
 // Global variables to keep track of total allocated mem, allocs, and frees
@@ -43,17 +43,13 @@ char pid[10];
 int this_is_printf = 0; // This flag tells malloc that the calling function is printf
 void *printf_buffer_addr = NULL; // This tells the program the mem addr of the printf buffer for cleanup
 
-/*  GENERAL TODO:
-*   - display where malloc, realloc, calloc, free are called in the program (line num)
-*/
-
 /*  generate_stack_trace()
 *   Generates trace at point of call, into tmpfile, and places
 *   the trace in the parameter backtracestr
 */
 void generate_stack_trace(char *tmpfile, char *backtracestr)
 {
-    fprintf(stderr, "start of generate_stack_trace\n");
+    if(DEBUG) fprintf(stderr, "++DEBUG++ Start of generate_stack_trace()\n");
     /*  EXTRA CREDIT TODO:
     *   - Show the function names and line numbers
     *   - How to do so:
@@ -158,7 +154,7 @@ int printf(const char *format, ...)
     if(DEBUG && printf_buffer_addr == NULL) 
         fprintf(stderr, "++DEBUG++ Before printf buffer malloc\n");
 
-    result = vprintf(format, ap); // TODO: try this with vfprintf (won't call malloc)
+    result = vprintf(format, ap);
     va_end(ap);
 
     this_is_printf = 0;
@@ -176,51 +172,85 @@ void *realloc(void *ptr, size_t new_size)
     void *p;
     if (!recursively_called) //first time called on runtime stack
     {
-        //TODO: check logic here
+        void *prev = ptr; // Need to save ptr since realloc might mess with it behind the scenes
         recursively_called = 1;
         if (!real_realloc)
             real_realloc = dlsym(RTLD_NEXT, "realloc"); //set to real realloc function via dynamic linker(only happens once due to static ptr)
         p = real_realloc(ptr, new_size);
 
-        if(DEBUG) fprintf(stderr, "++DEBUG++ realloc(%p, %ld) called inside if\n", ptr, new_size);
+        if(DEBUG) fprintf(stderr, "++DEBUG++ %p = realloc(%p, %zu) called inside if\n", p, ptr, new_size);
 
-        // Two cases: ptr is NULL or it is not
-        // If ptr is NULL, realloc acts like malloc
-        // If ptr is not NULL, resize previously allocated mem
-        if(ptr == NULL)
+        // 2 Cases: either realloc allocates new memory and frees old block OR resize original block 'in-place'
+        if(p != prev) // Since p points to another address, a new block of memory must have been allocated or ptr was NULL
         {
-            if(lastUsed < N)
+            if(prev == NULL) // If ptr(prev) was NULL, realloc acts like malloc
             {
-                blocks[lastUsed].block_size = (int) new_size;
-                blocks[lastUsed].memAddr = p;
-                blocks[lastUsed].freed = 0;
-                lastUsed++;
+                if(lastUsed < N)
+                {
+                    blocks[lastUsed].block_size = (int) new_size;
+                    blocks[lastUsed].memAddr = p;
+                    blocks[lastUsed].freed = 0;
+                    lastUsed++;
 
-                numAllocs++;
-                allocatedBytes += (int) new_size;
+                    numAllocs++;
+                    allocatedBytes += (int) new_size;
+                }
+                else
+                {
+                    fprintf(stderr, "REALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+                }
             }
-            else
+            else // In this case, realloc allocates a new mem block, copies the data, and frees the old block
             {
-                fprintf(stderr, "REALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+                if(lastUsed < N)
+                {
+                    blocks[lastUsed].block_size = (int) new_size;
+                    blocks[lastUsed].memAddr = p;
+                    blocks[lastUsed].freed = 0;
+                    lastUsed++;
+
+                    numAllocs++;
+                    allocatedBytes += (int) new_size;
+
+                    for(int x = 0; x < N; x++) // Don't actually call free, since real_realloc already called it
+                    {
+                        if(prev == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free
+                        {
+                            fprintf(stderr, "%s Invalid free: free(%p)\n", pid, p); //TODO: get line that this is called
+                            numFrees++;
+                            break;
+                        }
+                        else if(prev == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
+                        {
+                            blocks[x].freed = 1; //set to freed state
+                            numFrees++;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    fprintf(stderr, "REALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+                }
             }
         }
-        else
+        else // p = ptr, which means that realloc is resizing the original block 'in-place'
         {
             int flag = 0;
             for(int x = 0; x < N; x++)
             {
-                if(ptr == blocks[x].memAddr && blocks[x].freed == 0)
+                if(p == blocks[x].memAddr && blocks[x].freed == 0)
                 {
                     int previous_size = blocks[x].block_size;
                     blocks[x].block_size = (int) new_size;
 
-                    allocatedBytes += (int) new_size;
+                    allocatedBytes += (int) new_size - previous_size; // TODO: account for realloc reducing the size of mem block
                     numAllocs++;
                     flag = 1;
                     break;
                 }
             }
-
+            //TODO: is the below needed?
             if(flag == 0) // If the loop finished without matching any address
             {
                 // Program is attempting to realloc with invalid address
@@ -232,8 +262,8 @@ void *realloc(void *ptr, size_t new_size)
     }
     else //not first time on runtime stack
     {
-        if(DEBUG) fprintf(stderr, "++DEBUG++ realloc(%p, %ld) called inside else\n", ptr, new_size);
         p = real_realloc(ptr, new_size);
+        if(DEBUG) fprintf(stderr, "++DEBUG++ %p = realloc(%p, %zu) called inside else\n", p, ptr, new_size);
     }
     return p;
 }
@@ -255,7 +285,7 @@ void *calloc(size_t num, size_t size)
             real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker(only happens once due to static ptr)
         p = real_calloc(num, size);
 
-        if(DEBUG) fprintf(stderr, "++DEBUG++ calloc(%ld, %ld) called inside if: %p\n", num, size, p);
+        if(DEBUG) fprintf(stderr, "++DEBUG++ %p = calloc(%zu, %zu) called inside if\n", p, num, size);
 
         if(lastUsed < N)
         {
@@ -276,8 +306,8 @@ void *calloc(size_t num, size_t size)
     }
     else //not first time on runtime stack
     {
-        if(DEBUG) fprintf(stderr, "++DEBUG++ calloc(%ld, %ld) called inside else: %p\n", num, size, p);
         p = real_calloc(num, size);
+        if(DEBUG) fprintf(stderr, "++DEBUG++ %p = calloc(%zu, %zu) called inside else\n", p, num, size);
     }
     return p;
 }
@@ -299,7 +329,7 @@ void *malloc(size_t size)
             real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker(only happens once due to static ptr)
         p = real_malloc(size);
 
-        if(DEBUG) fprintf(stderr, "++DEBUG++ malloc(%ld) called inside if: %p\n", size, p);
+        if(DEBUG) fprintf(stderr, "++DEBUG++ %p = malloc(%zu) called inside if\n", p, size);
 
         if(lastUsed < N)
         {
@@ -321,8 +351,8 @@ void *malloc(size_t size)
     }
     else //not first time on runtime stack
     {
-        if(DEBUG) fprintf(stderr, "++DEBUG++ malloc(%ld) called inside else: %p\n", size, p);
         p = real_malloc(size);
+        if(DEBUG) fprintf(stderr, "++DEBUG++ %p = malloc(%zu) called inside else\n", p, size);
     }
     return p;
 }
@@ -349,14 +379,14 @@ void free(void *p)
         {
             if(p == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free
             {
-                fprintf(stderr, "%s Invalid free(): free(%p)\n", pid, p); //TODO: get line that this is called
+                fprintf(stderr, "%s Invalid free: free(%p)\n", pid, p); //TODO: get line that this is called
                 numFrees++;
                 flag = 1;
                 break;
             }
             else if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
             {
-                real_free(p); //first call the real free
+                real_free(p); //First, call the real free
                 blocks[x].freed = 1; //set to freed state
                 numFrees++;
                 flag = 1;
@@ -368,7 +398,7 @@ void free(void *p)
         {
             // Program is attempting to free with invalid address or
             // on memory that was never allocated before
-            fprintf(stderr, "%s Invalid address with free(): %p\n", pid, p); //TODO: get line that this is called
+            fprintf(stderr, "%s Invalid address for free(): %p\n", pid, p); //TODO: get line that this is called
         }
 
         /*
