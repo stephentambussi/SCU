@@ -11,8 +11,8 @@
  */
 //NOTE: this program is a prototype, it only needs to work on the 5 test cases
 #define _GNU_SOURCE
-#define N 40
-#define DEBUG 1 // 0 = debug messages off | 1 = debug messages on
+#define N 40        // Max size of memory tracking array
+#define DEBUG 0     // 0 = debug messages off | 1 = debug messages on
 
 #include <execinfo.h>
 #include <fcntl.h>
@@ -25,23 +25,23 @@
 
 // 'Linked list' to track allocated blocks
 struct allocatedMem {
-    int block_size; // TODO: change to size_t
-    void *memAddr; // address that points to allocated block
-    int freed; // -1 = never used | 0 = still allocated | 1 = already freed 
+    size_t block_size;
+    void *memAddr;      // Address that points to allocated block
+    int freed;          // -1 = never used | 0 = still allocated | 1 = already freed 
 };
 
 struct allocatedMem blocks[N]; // Array of structs (Linked List) to track allocated blocks
-int lastUsed = 0; // Keeps track of last allocated block index (for efficiency purposes)
+int lastUsed = 0;              // Keeps track of last allocated block index (for efficiency purposes)
 
 // Global variables to keep track of total allocated mem, allocs, and frees
 int numAllocs = 0;
 int numFrees = 0;
-int allocatedBytes = 0; //This keeps track of total heap usage, regardless of frees
+size_t allocatedBytes = 0;    // This keeps track of total heap usage, regardless of frees
 
 // Misc. global variables
 char pid[10];
-int this_is_printf = 0; // This flag tells malloc that the calling function is printf
-void *printf_buffer_addr = NULL; // This tells the program the mem addr of the printf buffer for cleanup
+int this_is_printf = 0;             // This flag tells malloc that the calling function is printf
+void *printf_buffer_addr = NULL;    // This tells the program the mem addr of the printf buffer for cleanup
 
 /*  generate_stack_trace()
 *   Generates trace at point of call, into tmpfile, and places
@@ -121,7 +121,7 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
 */
 void __attribute__((constructor)) premain()
 {
-    for(int x = 0; x < N; x++) //initialize each block of struct array
+    for(int x = 0; x < N; x++) // Initialize each block of struct array
     {
         blocks[x].block_size = 0;
         blocks[x].memAddr = NULL;
@@ -148,7 +148,7 @@ int printf(const char *format, ...)
 {
     this_is_printf = 1;
     int result;
-    va_list ap; // This means there can be many additional args following *format
+    va_list ap;             // This means there can be many additional args following *format
     va_start(ap, format);
 
     if(DEBUG && printf_buffer_addr == NULL) 
@@ -170,9 +170,9 @@ void *realloc(void *ptr, size_t new_size)
     static int recursively_called = 0;
     static void *(*real_realloc)(void *, size_t) = NULL;
     void *p;
-    if (!recursively_called) //first time called on runtime stack
+    if (!recursively_called)    // First time called on runtime stack
     {
-        void *prev = ptr; // Need to save ptr since realloc might mess with it behind the scenes
+        void *prev = ptr;       // Need to save ptr since realloc might mess with it behind the scenes
         recursively_called = 1;
         if (!real_realloc)
             real_realloc = dlsym(RTLD_NEXT, "realloc"); //set to real realloc function via dynamic linker(only happens once due to static ptr)
@@ -181,36 +181,36 @@ void *realloc(void *ptr, size_t new_size)
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = realloc(%p, %zu) called inside if\n", p, ptr, new_size);
 
         // 2 Cases: either realloc allocates new memory and frees old block OR resize original block 'in-place'
-        if(p != prev) // Since p points to another address, a new block of memory must have been allocated or ptr was NULL
+        if(p != prev)        // Since p points to another address, a new block of memory must have been allocated or ptr was NULL
         {
             if(prev == NULL) // If ptr(prev) was NULL, realloc acts like malloc
             {
                 if(lastUsed < N)
                 {
-                    blocks[lastUsed].block_size = (int) new_size;
+                    blocks[lastUsed].block_size = new_size;
                     blocks[lastUsed].memAddr = p;
                     blocks[lastUsed].freed = 0;
                     lastUsed++;
 
                     numAllocs++;
-                    allocatedBytes += (int) new_size;
+                    allocatedBytes += new_size;
                 }
                 else
                 {
-                    fprintf(stderr, "REALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+                    fprintf(stderr, "##ERROR## program has reached the limit of memory tracking size --> INCREASE N\n");
                 }
             }
             else // In this case, realloc allocates a new mem block, copies the data, and frees the old block
             {
                 if(lastUsed < N)
                 {
-                    blocks[lastUsed].block_size = (int) new_size;
+                    blocks[lastUsed].block_size = new_size;
                     blocks[lastUsed].memAddr = p;
                     blocks[lastUsed].freed = 0;
                     lastUsed++;
 
                     numAllocs++;
-                    allocatedBytes += (int) new_size;
+                    allocatedBytes += new_size;
 
                     for(int x = 0; x < N; x++) // Don't actually call free, since real_realloc already called it
                     {
@@ -222,7 +222,7 @@ void *realloc(void *ptr, size_t new_size)
                         }
                         else if(prev == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
                         {
-                            blocks[x].freed = 1; //set to freed state
+                            blocks[x].freed = 1; // Set to freed state
                             numFrees++;
                             break;
                         }
@@ -230,7 +230,7 @@ void *realloc(void *ptr, size_t new_size)
                 }
                 else
                 {
-                    fprintf(stderr, "REALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+                    fprintf(stderr, "##ERROR## program has reached the limit of memory tracking size --> INCREASE N\n");
                 }
             }
         }
@@ -241,10 +241,10 @@ void *realloc(void *ptr, size_t new_size)
             {
                 if(p == blocks[x].memAddr && blocks[x].freed == 0)
                 {
-                    int previous_size = blocks[x].block_size;
-                    blocks[x].block_size = (int) new_size;
+                    size_t previous_size = blocks[x].block_size;
+                    blocks[x].block_size = new_size;
 
-                    allocatedBytes += (int) new_size - previous_size; // TODO: account for realloc reducing the size of mem block
+                    allocatedBytes += (int) new_size - previous_size; // TODO: account for realloc reducing the size of mem block (neg)
                     numAllocs++;
                     flag = 1;
                     break;
@@ -277,9 +277,8 @@ void *calloc(size_t num, size_t size)
     static int recursively_called = 0;
     static void *(*real_calloc)(size_t, size_t) = NULL;
     void *p;
-    if (!recursively_called) //first time called on runtime stack
+    if (!recursively_called) // First time called on runtime stack
     {
-        //TODO: check this logic
         recursively_called = 1;
         if (!real_calloc)
             real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker(only happens once due to static ptr)
@@ -289,7 +288,7 @@ void *calloc(size_t num, size_t size)
 
         if(lastUsed < N)
         {
-            blocks[lastUsed].block_size = (int) num * size; //This is the primary difference between malloc
+            blocks[lastUsed].block_size = num * size; // This is the primary difference between malloc
             blocks[lastUsed].memAddr = p;
             blocks[lastUsed].freed = 0;
             lastUsed++;
@@ -299,12 +298,12 @@ void *calloc(size_t num, size_t size)
         }
         else
         {
-            fprintf(stderr, "CALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+            fprintf(stderr, "##ERROR## program has reached the limit of memory tracking size --> INCREASE N\n");
         }
 
         recursively_called = 0;
     }
-    else //not first time on runtime stack
+    else // Not first time on runtime stack
     {
         p = real_calloc(num, size);
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = calloc(%zu, %zu) called inside else\n", p, num, size);
@@ -322,7 +321,7 @@ void *malloc(size_t size)
     static void *(*real_malloc)(size_t) = NULL;
     void *p;
     int f;
-    if (!recursively_called) //first time called on runtime stack
+    if (!recursively_called) // First time called on runtime stack
     {
         recursively_called = 1;
         if (!real_malloc)
@@ -333,10 +332,10 @@ void *malloc(size_t size)
 
         if(lastUsed < N)
         {
-            blocks[lastUsed].block_size = (int) size;
+            blocks[lastUsed].block_size = size;
             blocks[lastUsed].memAddr = p;
             blocks[lastUsed].freed = 0;
-            allocatedBytes += (int) size;
+            allocatedBytes += size;
             // Set printf_buffer_index so destructor can free the printf buffer
             if(this_is_printf) printf_buffer_addr = p;
             lastUsed++;
@@ -344,12 +343,12 @@ void *malloc(size_t size)
         }
         else
         {
-            fprintf(stderr, "MALLOC TODO: ERROR MESSAGE OR INCREASE SIZE OF ARRAY\n");
+            fprintf(stderr, "##ERROR## program has reached the limit of memory tracking size --> INCREASE N\n");
         }
 
         recursively_called = 0;
     }
-    else //not first time on runtime stack
+    else // Not first time on runtime stack
     {
         p = real_malloc(size);
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = malloc(%zu) called inside else\n", p, size);
@@ -366,7 +365,7 @@ void free(void *p)
     static int recursively_called = 0;
     static void (*real_free)(void *) = NULL;
     char backtracestr[4096];
-    if (!recursively_called) //first time called on runtime stack
+    if (!recursively_called) // First time called on runtime stack
     {
         recursively_called = 1;
         if (!real_free)
@@ -386,8 +385,8 @@ void free(void *p)
             }
             else if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
             {
-                real_free(p); //First, call the real free
-                blocks[x].freed = 1; //set to freed state
+                real_free(p); // First, call the real free
+                blocks[x].freed = 1; // Then, set block to freed state
                 numFrees++;
                 flag = 1;
                 break;
@@ -408,7 +407,7 @@ void free(void *p)
         //fprintf(stderr, "%s", backtracestr);
         recursively_called = 0;
     }
-    else //not first time on runtime stack
+    else // Not first time on runtime stack
     {
         if(DEBUG) fprintf(stderr, "++DEBUG++ free(%p) called inside else\n", p);
 
@@ -417,8 +416,8 @@ void free(void *p)
         {
             if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
             {
-                real_free(p); //first call the real free
-                blocks[x].freed = 1; //set to freed state
+                real_free(p); // First, call the real free
+                blocks[x].freed = 1; // Then, set block to freed state
                 numFrees++;
                 break;
             }
@@ -439,11 +438,11 @@ void __attribute__((destructor)) postmain()
     }
 
     // Calculate the amount of memory leakage
-    int leak_amount = 0;
+    size_t leak_amount = 0;
     int leaked_blocks = 0;
     for(int x = 0; x < N; x++)
     {
-        if(blocks[x].freed == 0) // find the blocks that are still allocated
+        if(blocks[x].freed == 0) // Find the blocks that are still allocated
         {
             leak_amount += blocks[x].block_size;
             leaked_blocks++;
@@ -454,8 +453,17 @@ void __attribute__((destructor)) postmain()
     // Print Summary
     fprintf(stderr, "%s\n", pid);
     fprintf(stderr, "%s HEAP SUMMARY:\n", pid);
-    fprintf(stderr, "%s  In use at program exit: %d bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
-    fprintf(stderr, "%s  Total heap usage: %d allocs, %d frees, %d bytes allocated\n", pid, numAllocs, numFrees, allocatedBytes);
-    //TODO: explicitly list each memory loss and where it was in the program
-    //TODO: explicitly print out if there was a leak based upon above data and say how much it was (think LEAK SUMMARY from valgrind)
+    fprintf(stderr, "%s   In use at program exit: %zu bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
+    fprintf(stderr, "%s   Total heap usage: %d allocs, %d frees, %zu bytes allocated\n", pid, numAllocs, numFrees, allocatedBytes);
+    fprintf(stderr, "%s\n", pid);
+    //TODO: explicitly list each memory loss and where it was in the program (stack trace)
+    if(leak_amount == 0) // No leak
+    {
+        fprintf(stderr, "%s All memory blocks were freed -- no memory leak detected\n", pid);
+    }
+    else // Memory leak
+    {
+        fprintf(stderr, "%s !!LEAK DETECTED!!\n", pid);
+        fprintf(stderr, "%s   lost: %zu bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
+    }
 }
