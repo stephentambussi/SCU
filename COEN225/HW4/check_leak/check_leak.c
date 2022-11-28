@@ -23,16 +23,20 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 // 'Linked list' to track allocated blocks
 struct allocatedMem {
     size_t block_size;
     void *memAddr;      // Address that points to allocated block
     int freed;          // -1 = never used | 0 = still allocated | 1 = already freed 
+    char stack_trace[4096]; // String to hold the stack trace
+    int allocatorType; // 0 = realloc | 1 = calloc | 2 = malloc
 };
 
 struct allocatedMem blocks[N]; // Array of structs (Linked List) to track allocated blocks
 int lastUsed = 0;              // Keeps track of last allocated block index (for efficiency purposes)
+int stackTraceIndex = 0;       // Holds the position of the node to print the stack trace to
 
 // Global variables to keep track of total allocated mem, allocs, and frees
 int numAllocs = 0;
@@ -46,16 +50,16 @@ void *printf_buffer_addr = NULL;    // This tells the program the mem addr of th
 static int recursively_called_malloc = 0; // Flag specific to the malloc function to help with generate_stack_trace
 static int recursively_called_calloc = 0; // Flag specific to the calloc function to help with generate_stack_trace
 static int recursively_called_free = 0; // Flag specific to the free function to help with generate_stack_trace
-char stack_trace[4096]; // String to hold the stack trace
 
 /*  generate_stack_trace()
 *   Generates trace at point of call, into tmpfile, and places
 *   the trace in the parameter backtracestr
 */
 void generate_stack_trace(char *tmpfile, char *backtracestr)
-{
+{   // TODO: use backtracestr for invalid free stack traces
+    // TODO: verify this works with realloc, calloc, and free
     if(DEBUG) fprintf(stderr, "++DEBUG++ Start of generate_stack_trace()\n");
-    /*  EXTRA CREDIT TODO:
+    /*  EXTRA CREDIT:
     *   - Show the function names and line numbers
     *   - How to do so:
     *       - Get the function names and line numbers from .gdbout
@@ -90,16 +94,16 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
     size = backtrace(array, 10);
     backtrace_symbols_fd(array, size, f); // This will write the backtrace to the tmpfile
     close(f);
-    backtracestr[0] = 0;
+    if(backtracestr) backtracestr[0] = 0;
 
     fp = fopen(tmpfile, "r");
-    char filename[10];
-    char *offset;
-    char system_str[100];
     fclose(fopen("backtrace.gdbout", "w")); // This will clear the .gdbout file for each call to generate_stack_trace
 
     while(fgets(line, 256, fp)) // Parse the backtrace.txt file
     {
+        char filename[10];
+        char *offset;
+        char system_str[100];
         //For simplicity, making assumption that executable name is always "a.out"
         if(strncmp(line, "./a.out", 7) == 0)
         {
@@ -117,7 +121,56 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
     }
     fclose(fp);
 
-    //fp = fopen("backtrace.gdbout", "r");
+    fp = fopen("backtrace.gdbout", "r");
+    
+    if(backtracestr == NULL) // This is for malloc, calloc, and realloc
+    {
+        while(fgets(line, 256, fp)) // Parse the backtrace.gdbout file
+        {
+            char formatted_line[256];
+            char line_copy[256];
+            int line_num = 0;
+            char *filename;
+            char *address;
+            char *function;
+
+            // Get line number
+            int digit = 0;
+            for(int i = 0; i < strlen(line) - 1; i++)
+            {
+                if(isdigit(line[i]))
+                {
+                    digit = line[i] - '0';
+                    line_num = line_num * 10 + digit;
+                }
+                if(line[i] == ' ' && line[i+1] == 'o')
+                    break;
+            }
+
+            // Get filename
+            strcpy(line_copy, line); // Copy the string first since strtok modifies it
+            filename = strtok(line_copy, "\"");
+            filename = strtok(NULL, "\"");
+
+            // Get address
+            address = strstr(line, "0x");
+
+            // Get function name
+            function = strtok(line, "<");
+            function = strtok(NULL, "+");
+            
+            sprintf(formatted_line, "%s   by %s: inside %s (%s on line %d)\n", pid_str, address, function, filename, line_num);
+            if(DEBUG) fprintf(stderr, "++DEBUG++ %s\n", formatted_line);
+
+            strcat(blocks[stackTraceIndex].stack_trace, formatted_line);
+        }
+    }
+    else // free() stack trace parsing
+    {
+        fprintf(stderr, "Do nothing for now\n");
+    }
+
+    fclose(fp);
 
     recursively_called_malloc = 0;
     recursively_called_calloc = 0;
@@ -125,7 +178,7 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
 
     /*
     fp = fopen(tmpfile, "r");
-    // The below will read from the tmpfile and add to the backtracestr --> THIS SHOULD BE DONE LAST
+    // The below will read from the tmpfile and add to the backtracestr
     while (fgets(line, 256, fp))
     {
         strcat(backtracestr, line);
@@ -143,12 +196,11 @@ void __attribute__((constructor)) premain()
         blocks[x].block_size = 0;
         blocks[x].memAddr = NULL;
         blocks[x].freed = -1;
+        blocks[x].allocatorType = -1;
     }
     numAllocs = 0;
     numFrees = 0;
     allocatedBytes = 0;
-
-    memset(stack_trace, ' ', 4096); // Clear the stack_trace string to be empty
 
     memset(pid_str, ' ', 10);
     sprintf(pid_str, "==%ld==", (long)getpid());
@@ -212,10 +264,12 @@ void *realloc(void *ptr, size_t new_size)
                     blocks[lastUsed].block_size = new_size;
                     blocks[lastUsed].memAddr = p;
                     blocks[lastUsed].freed = 0;
-                    lastUsed++;
-
+                    blocks[lastUsed].allocatorType = 0;
+                    stackTraceIndex = lastUsed;
                     numAllocs++;
                     allocatedBytes += new_size;
+
+                    lastUsed++;
                 }
                 else
                 {
@@ -229,10 +283,12 @@ void *realloc(void *ptr, size_t new_size)
                     blocks[lastUsed].block_size = new_size;
                     blocks[lastUsed].memAddr = p;
                     blocks[lastUsed].freed = 0;
-                    lastUsed++;
-
+                    blocks[lastUsed].allocatorType = 0;
+                    stackTraceIndex = lastUsed;
                     numAllocs++;
                     allocatedBytes += new_size;
+
+                    lastUsed++;
 
                     for(int x = 0; x < N; x++) // Don't actually call free, since real_realloc already called it
                     {
@@ -265,6 +321,7 @@ void *realloc(void *ptr, size_t new_size)
                 {
                     size_t previous_size = blocks[x].block_size;
                     blocks[x].block_size = new_size;
+                    stackTraceIndex = x;
 
                     allocatedBytes += (int) new_size - previous_size; // TODO: account for realloc reducing the size of mem block (neg)
                     numAllocs++;
@@ -315,10 +372,12 @@ void *calloc(size_t num, size_t size)
             blocks[lastUsed].block_size = num * size; // This is the primary difference between malloc
             blocks[lastUsed].memAddr = p;
             blocks[lastUsed].freed = 0;
-            lastUsed++;
+            blocks[lastUsed].allocatorType = 1;
+            stackTraceIndex = lastUsed;
 
             numAllocs++;
             allocatedBytes += num * size;
+            lastUsed++;
         }
         else
         {
@@ -347,7 +406,6 @@ void *malloc(size_t size)
     static void *(*real_malloc)(size_t) = NULL;
     void *p;
     int f;
-    char backtracestr[4096];
     if (!recursively_called_malloc) // Not recursively called
     {
         recursively_called_malloc = 1;
@@ -362,18 +420,23 @@ void *malloc(size_t size)
             blocks[lastUsed].block_size = size;
             blocks[lastUsed].memAddr = p;
             blocks[lastUsed].freed = 0;
+            blocks[lastUsed].allocatorType = 2;
             allocatedBytes += size;
             // Set printf_buffer_index so destructor can free the printf buffer
             if(this_is_printf) printf_buffer_addr = p;
-            lastUsed++;
+            stackTraceIndex = lastUsed;
             numAllocs++;
+
+            lastUsed++;
         }
         else
         {
             fprintf(stderr, "##ERROR## program has reached the limit of memory tracking size --> INCREASE N\n");
+            recursively_called_malloc = 0;
+            return p;
         }
 
-        if(!this_is_printf) generate_stack_trace("backtrace.txt", backtracestr); // Don't call stack trace on printf buffer malloc
+        if(!this_is_printf) generate_stack_trace("backtrace.txt", NULL); // Don't call stack trace on printf buffer malloc
 
         recursively_called_malloc = 0;
     }
@@ -409,9 +472,12 @@ void free(void *p)
         {
             if(p == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free
             {
-                fprintf(stderr, "%s Invalid free: free(%p)\n", pid_str, p); //TODO: get line that this is called --> call generate stack_trace
+                fprintf(stderr, "%s Invalid free: free(%p)\n", pid_str, p);
                 numFrees++;
                 flag = 1;
+                // TODO: implement stack trace for only invalid free scenarios
+                //if(p != printf_buffer_addr) generate_stack_trace("backtrace.txt", backtracestr); // Don't call stack trace on printf buffer free
+                //fprintf(stderr, "%s", backtracestr);
                 break;
             }
             else if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
@@ -430,9 +496,6 @@ void free(void *p)
             // on memory that was never allocated before
             fprintf(stderr, "%s Invalid address for free(): %p\n", pid_str, p); //TODO: get line that this is called
         }
-
-        //if(p != printf_buffer_addr) generate_stack_trace("backtrace.txt", backtracestr); // Don't call stack trace on printf buffer free
-        //fprintf(stderr, "%s", backtracestr);
         
         recursively_called_free = 0;
     }
@@ -487,7 +550,7 @@ void __attribute__((destructor)) postmain()
     fprintf(stderr, "%s   In use at program exit: %zu bytes in %d blocks\n", pid_str, leak_amount, leaked_blocks);
     fprintf(stderr, "%s   Total heap usage: %d allocs, %d frees, %zu bytes allocated\n", pid_str, numAllocs, numFrees, allocatedBytes);
     fprintf(stderr, "%s\n", pid_str);
-    //TODO: explicitly list each memory loss and where it was in the program (stack trace)
+
     //TODO: display number of invalid frees (count)
     if(leak_amount == 0) // No leak
     {
@@ -496,6 +559,26 @@ void __attribute__((destructor)) postmain()
     else // Memory leak
     {
         fprintf(stderr, "%s !!LEAK DETECTED!!\n", pid_str);
+        fprintf(stderr, "%s\n", pid_str);
+        for(int x = 0; x < N; x++)
+        {
+            if(blocks[x].freed == 0)
+            {
+                char allocator[10];
+                if(blocks[x].allocatorType == 0) // realloc
+                    strcpy(allocator, "realloc");
+                else if(blocks[x].allocatorType == 1) // calloc
+                    strcpy(allocator, "calloc");
+                else if(blocks[x].allocatorType == 2) // malloc
+                    strcpy(allocator, "malloc");
+
+                fprintf(stderr, "%s %d bytes lost in block\n", pid_str, blocks[x].block_size);
+                fprintf(stderr, "%s   at %s\n", pid_str, allocator);
+                fprintf(stderr, "%s", blocks[x].stack_trace);
+                fprintf(stderr, "%s\n", pid_str);
+            }
+        }
+        // TODO: change this formatting
         fprintf(stderr, "%s   lost: %zu bytes in %d blocks\n", pid_str, leak_amount, leaked_blocks);
     }
 }
