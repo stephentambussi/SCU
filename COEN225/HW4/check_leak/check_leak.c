@@ -11,10 +11,11 @@
  */
 //NOTE: this program is a prototype, it only needs to work on the 5 test cases
 #define _GNU_SOURCE
-#define N 40        // Max size of memory tracking array
-#define DEBUG 0     // 0 = debug messages off | 1 = debug messages on
+#define N 50        // Max size of memory tracking array
+#define DEBUG 1     // 0 = debug messages off | 1 = debug messages on
 
 #include <execinfo.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <dlfcn.h>
@@ -39,9 +40,13 @@ int numFrees = 0;
 size_t allocatedBytes = 0;    // This keeps track of total heap usage, regardless of frees
 
 // Misc. global variables
-char pid[10];
+char pid_str[10];
 int this_is_printf = 0;             // This flag tells malloc that the calling function is printf
 void *printf_buffer_addr = NULL;    // This tells the program the mem addr of the printf buffer for cleanup
+static int recursively_called_malloc = 0; // Flag specific to the malloc function to help with generate_stack_trace
+static int recursively_called_calloc = 0; // Flag specific to the calloc function to help with generate_stack_trace
+static int recursively_called_free = 0; // Flag specific to the free function to help with generate_stack_trace
+char stack_trace[4096]; // String to hold the stack trace
 
 /*  generate_stack_trace()
 *   Generates trace at point of call, into tmpfile, and places
@@ -53,10 +58,8 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
     /*  EXTRA CREDIT TODO:
     *   - Show the function names and line numbers
     *   - How to do so:
-    *       - Call system("gdb -batch -ex 'file a.out' -ex 'info line * 0x80484a6' > /tmp/backtrace.gdbout");
-    *           - This will generate the function names and line number
     *       - Get the function names and line numbers from .gdbout
-    *       - NOTE: need to subtract 1 from the start of the current line
+    *       - NOTE: need to subtract 1 from the start of the current line --> THIS EXAMPLE IS FOR MALLOC
     *            For example,
     *            Given: ./a.out[0x80484a6]
     * 
@@ -79,32 +82,47 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
         perror("Failed to create/open a file...\n");
         exit(0);
     }
+
+    recursively_called_malloc = 1;
+    recursively_called_calloc = 1;
+    recursively_called_free = 1;
+
     size = backtrace(array, 10);
     backtrace_symbols_fd(array, size, f); // This will write the backtrace to the tmpfile
     close(f);
     backtracestr[0] = 0;
+
     fp = fopen(tmpfile, "r");
-    //while(fgets(line, 256, fp))
-    //{
-        //char filename[10];
-        //char *offset;
-        //char system_str[100];
+    char filename[10];
+    char *offset;
+    char system_str[100];
+    fclose(fopen("backtrace.gdbout", "w")); // This will clear the .gdbout file for each call to generate_stack_trace
+
+    while(fgets(line, 256, fp)) // Parse the backtrace.txt file
+    {
         //For simplicity, making assumption that executable name is always "a.out"
-        //if(strncmp(line, "./a.out", 7) == 0)
-        //{
-            //strcpy(filename, "a.out");
-            //offset = strtok(line, "[");
-            //offset = strtok(NULL, "]");
-            
-            //sprintf(system_str, "gdb -batch -ex 'file %s' -ex 'info line * %s' > backtrace.gdbout", filename, offset);
-            //system(system_str);
-            //fprintf(stderr, "%s\n", system_str);
-        //}
-        //if(strncmp(line, "/lib/", 5) == 0) //stop detector
-        //{
-        //    break;
-        //}
-    //}
+        if(strncmp(line, "./a.out", 7) == 0)
+        {
+            strcpy(filename, "a.out");
+            offset = strtok(line, "[");
+            offset = strtok(NULL, "]");
+            snprintf(system_str, sizeof(system_str), "gdb -batch -ex 'file %s' -ex 'info line * %s' >> backtrace.gdbout", filename, offset);
+            if(DEBUG) fprintf(stderr, "++DEBUG++ $ %s\n", system_str);
+            system(system_str);
+        }
+        if(strncmp(line, "/lib/", 5) == 0) //stop detector
+        {
+            break;
+        }
+    }
+    fclose(fp);
+
+    //fp = fopen("backtrace.gdbout", "r");
+
+    recursively_called_malloc = 0;
+    recursively_called_calloc = 0;
+    recursively_called_free = 0;
+
     /*
     fp = fopen(tmpfile, "r");
     // The below will read from the tmpfile and add to the backtracestr --> THIS SHOULD BE DONE LAST
@@ -113,7 +131,6 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
         strcat(backtracestr, line);
     }
     */
-    fclose(fp);
 }
 
 /*  premain()
@@ -130,12 +147,17 @@ void __attribute__((constructor)) premain()
     numAllocs = 0;
     numFrees = 0;
     allocatedBytes = 0;
-    memset(pid, ' ', 10);
-    sprintf(pid, "==%ld==", (long)getpid());
+
+    memset(stack_trace, ' ', 4096); // Clear the stack_trace string to be empty
+
+    memset(pid_str, ' ', 10);
+    sprintf(pid_str, "==%ld==", (long)getpid());
     
-    fprintf(stderr, "%s A Memory Error Detector Program\n", pid);
-    fprintf(stderr, "%s Created by Stephen Tambussi for COEN225\n", pid);
-    fprintf(stderr, "%s\n", pid);
+    fprintf(stderr, "%s A Memory Error Detector Program\n", pid_str);
+    fprintf(stderr, "%s Created by Stephen Tambussi for COEN225\n", pid_str);
+    fprintf(stderr, "%s\n", pid_str);
+
+    unsetenv("LD_PRELOAD"); // Avoids fork bombing and enables system() to work correctly
 }
 
 /*  printf()
@@ -170,7 +192,7 @@ void *realloc(void *ptr, size_t new_size)
     static int recursively_called = 0;
     static void *(*real_realloc)(void *, size_t) = NULL;
     void *p;
-    if (!recursively_called)    // First time called on runtime stack
+    if (!recursively_called)    // Not recursively called
     {
         void *prev = ptr;       // Need to save ptr since realloc might mess with it behind the scenes
         recursively_called = 1;
@@ -216,7 +238,7 @@ void *realloc(void *ptr, size_t new_size)
                     {
                         if(prev == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free
                         {
-                            fprintf(stderr, "%s Invalid free: free(%p)\n", pid, p); //TODO: get line that this is called
+                            fprintf(stderr, "%s Invalid free: free(%p)\n", pid_str, p); //TODO: get line that this is called
                             numFrees++;
                             break;
                         }
@@ -254,14 +276,17 @@ void *realloc(void *ptr, size_t new_size)
             if(flag == 0) // If the loop finished without matching any address
             {
                 // Program is attempting to realloc with invalid address
-                fprintf(stderr, "%s Invalid address with realloc(): %p\n", pid, p); //TODO: get line that this is called
+                fprintf(stderr, "%s Invalid address with realloc(): %p\n", pid_str, p); //TODO: get line that this is called
             }
         }
 
         recursively_called = 0;
     }
-    else //not first time on runtime stack
+    else // Recursively called
     {
+        if (!real_realloc)
+            real_realloc = dlsym(RTLD_NEXT, "realloc"); //set to real realloc function via dynamic linker(only happens once due to static ptr)
+        
         p = real_realloc(ptr, new_size);
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = realloc(%p, %zu) called inside else\n", p, ptr, new_size);
     }
@@ -274,12 +299,11 @@ void *realloc(void *ptr, size_t new_size)
 */
 void *calloc(size_t num, size_t size)
 {
-    static int recursively_called = 0;
     static void *(*real_calloc)(size_t, size_t) = NULL;
     void *p;
-    if (!recursively_called) // First time called on runtime stack
+    if (!recursively_called_calloc) // Not recursively called
     {
-        recursively_called = 1;
+        recursively_called_calloc = 1;
         if (!real_calloc)
             real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker(only happens once due to static ptr)
         p = real_calloc(num, size);
@@ -301,10 +325,13 @@ void *calloc(size_t num, size_t size)
             fprintf(stderr, "##ERROR## program has reached the limit of memory tracking size --> INCREASE N\n");
         }
 
-        recursively_called = 0;
+        recursively_called_calloc = 0;
     }
-    else // Not first time on runtime stack
+    else // Recursively called or called to avoid memory tracking functions
     {
+        if (!real_calloc)
+            real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker(only happens once due to static ptr)
+        
         p = real_calloc(num, size);
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = calloc(%zu, %zu) called inside else\n", p, num, size);
     }
@@ -317,13 +344,13 @@ void *calloc(size_t num, size_t size)
 */
 void *malloc(size_t size)
 {
-    static int recursively_called = 0;
     static void *(*real_malloc)(size_t) = NULL;
     void *p;
     int f;
-    if (!recursively_called) // First time called on runtime stack
+    char backtracestr[4096];
+    if (!recursively_called_malloc) // Not recursively called
     {
-        recursively_called = 1;
+        recursively_called_malloc = 1;
         if (!real_malloc)
             real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker(only happens once due to static ptr)
         p = real_malloc(size);
@@ -346,10 +373,15 @@ void *malloc(size_t size)
             fprintf(stderr, "##ERROR## program has reached the limit of memory tracking size --> INCREASE N\n");
         }
 
-        recursively_called = 0;
+        if(!this_is_printf) generate_stack_trace("backtrace.txt", backtracestr); // Don't call stack trace on printf buffer malloc
+
+        recursively_called_malloc = 0;
     }
-    else // Not first time on runtime stack
+    else // Recursively called or called to avoid memory tracking functions
     {
+        if (!real_malloc)
+            real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker(only happens once due to static ptr)
+        
         p = real_malloc(size);
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = malloc(%zu) called inside else\n", p, size);
     }
@@ -362,12 +394,11 @@ void *malloc(size_t size)
 */
 void free(void *p)
 {
-    static int recursively_called = 0;
     static void (*real_free)(void *) = NULL;
     char backtracestr[4096];
-    if (!recursively_called) // First time called on runtime stack
+    if (!recursively_called_free) // Not recursively called
     {
-        recursively_called = 1;
+        recursively_called_free = 1;
         if (!real_free)
             real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker(only happens once due to static ptr) 
 
@@ -378,7 +409,7 @@ void free(void *p)
         {
             if(p == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free
             {
-                fprintf(stderr, "%s Invalid free: free(%p)\n", pid, p); //TODO: get line that this is called
+                fprintf(stderr, "%s Invalid free: free(%p)\n", pid_str, p); //TODO: get line that this is called --> call generate stack_trace
                 numFrees++;
                 flag = 1;
                 break;
@@ -397,21 +428,21 @@ void free(void *p)
         {
             // Program is attempting to free with invalid address or
             // on memory that was never allocated before
-            fprintf(stderr, "%s Invalid address for free(): %p\n", pid, p); //TODO: get line that this is called
+            fprintf(stderr, "%s Invalid address for free(): %p\n", pid_str, p); //TODO: get line that this is called
         }
 
-        /*
-          uncomment the next 2 lines to see how generate_stack_trace() works
-        */
-        //generate_stack_trace("backtrace.txt", backtracestr);
+        //if(p != printf_buffer_addr) generate_stack_trace("backtrace.txt", backtracestr); // Don't call stack trace on printf buffer free
         //fprintf(stderr, "%s", backtracestr);
-        recursively_called = 0;
+        
+        recursively_called_free = 0;
     }
-    else // Not first time on runtime stack
+    else // Recursively called or called to avoid memory tracking functions
     {
+        if (!real_free)
+            real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker(only happens once due to static ptr) 
+        
         if(DEBUG) fprintf(stderr, "++DEBUG++ free(%p) called inside else\n", p);
-
-        //TODO: check this
+        
         for(int x = 0; x < N; x++)
         {
             if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
@@ -449,21 +480,22 @@ void __attribute__((destructor)) postmain()
         }
     }
     
-    //TODO: Finalize summary
+    //TODO: Finalize summary, change to more general summary with sections for heap and invalid frees?
     // Print Summary
-    fprintf(stderr, "%s\n", pid);
-    fprintf(stderr, "%s HEAP SUMMARY:\n", pid);
-    fprintf(stderr, "%s   In use at program exit: %zu bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
-    fprintf(stderr, "%s   Total heap usage: %d allocs, %d frees, %zu bytes allocated\n", pid, numAllocs, numFrees, allocatedBytes);
-    fprintf(stderr, "%s\n", pid);
+    fprintf(stderr, "%s\n", pid_str);
+    fprintf(stderr, "%s HEAP SUMMARY:\n", pid_str);
+    fprintf(stderr, "%s   In use at program exit: %zu bytes in %d blocks\n", pid_str, leak_amount, leaked_blocks);
+    fprintf(stderr, "%s   Total heap usage: %d allocs, %d frees, %zu bytes allocated\n", pid_str, numAllocs, numFrees, allocatedBytes);
+    fprintf(stderr, "%s\n", pid_str);
     //TODO: explicitly list each memory loss and where it was in the program (stack trace)
+    //TODO: display number of invalid frees (count)
     if(leak_amount == 0) // No leak
     {
-        fprintf(stderr, "%s All memory blocks were freed -- no memory leak detected\n", pid);
+        fprintf(stderr, "%s All memory blocks were freed -- no memory leak detected\n", pid_str);
     }
     else // Memory leak
     {
-        fprintf(stderr, "%s !!LEAK DETECTED!!\n", pid);
-        fprintf(stderr, "%s   lost: %zu bytes in %d blocks\n", pid, leak_amount, leaked_blocks);
+        fprintf(stderr, "%s !!LEAK DETECTED!!\n", pid_str);
+        fprintf(stderr, "%s   lost: %zu bytes in %d blocks\n", pid_str, leak_amount, leaked_blocks);
     }
 }
