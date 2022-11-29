@@ -11,7 +11,7 @@ int main() {
         for (i = 0; i < 10; ++i) { * (ptr + i) = i;
             sum += * (ptr + i);
         }
-        printf("Sum = %d", sum);
+        printf("Sum = %d\n", sum);
 
         sum = 0;
         ptr = calloc(10, sizeof(int));
@@ -23,7 +23,7 @@ int main() {
         for (i = 0; i < 10; ++i) { * (ptr + i) = i;
             sum += * (ptr + i);
         }
-        printf("Sum = %d", sum);
+        printf("Sum = %d\n", sum);
 
         free(ptr);
         return 0;
