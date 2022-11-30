@@ -1,3 +1,7 @@
+- around 10 questions on final 
+   - 3 questions from midterm 1 and 2 concepts
+   - 7 questions from after midterm 2 concepts
+
 FROM LECTURE 8
 1.3.3 Study questions:
 a) how many procesess if we add another fork call to fork2.c
@@ -38,3 +42,11 @@ Compile it using AFL-GCC.
 Fuzz it using AFL-FUZZ for one hour.
 Report numbers of the crashing and hanging test cases.
 Try the test cases out and see if they indeed produce the crashes or hangs.
+
+FROM LECTURE 10
+2. Study question:
+Given a program with runtime vulnerabilities, indicate which ones can/cannot be detected by Valgrind/Google Sanitizer.
+
+3. Study questions:
+Given a program, identify the vulnerabilities, and which analysis solution is used to detect the vulnerabilities.
+Given a tainted program, provide malicious input to inject a command.
