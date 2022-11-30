@@ -8,8 +8,12 @@
  *      1) Run "make"
  *      2) Compile one of the tests: "gcc -g test1.c"
  *      3) Run a.out using custom library: "LD_PRELOAD=$PWD/check_leak.so ./a.out"
+ * 
+ *   NOTE:
+ *      This program is a prototype and was only designed to work on the 5 tests.
+ *      Running this program on code outside these tests may produce unexpected results.
  */
-//NOTE: this program is a prototype, it only needs to work on the 5 test cases
+
 #define _GNU_SOURCE
 #define N 50        // Max size of memory tracking array
 #define DEBUG 0     // 0 = debug messages off | 1 = debug messages on
@@ -28,10 +32,10 @@
 // 'Linked list' to track allocated blocks
 struct allocatedMem {
     size_t block_size;
-    void *memAddr;      // Address that points to allocated block
-    int freed;          // -1 = never used | 0 = still allocated | 1 = already freed 
+    void *memAddr;          // Address that points to allocated block
+    int freed;              // -1 = never used | 0 = still allocated | 1 = already freed 
     char stack_trace[4096]; // String to hold the stack trace
-    int allocatorType; // 0 = realloc | 1 = calloc | 2 = malloc
+    int allocatorType;      // 0 = realloc | 1 = calloc | 2 = malloc
 };
 
 struct allocatedMem blocks[N]; // Array of structs (Linked List) to track allocated blocks
@@ -42,15 +46,15 @@ int stackTraceIndex = 0;       // Holds the position of the node to print the st
 int numAllocs = 0;
 int numFrees = 0;
 size_t allocatedBytes = 0;    // This keeps track of total heap usage, regardless of frees
-int numErrors = 0; 
+int numErrors = 0;            // Invalid frees and memory leaks are counted as errors
 
 // Misc. global variables
 char pid_str[10];
-int this_is_printf = 0;             // This flag tells malloc that the calling function is printf
-void *printf_buffer_addr = NULL;    // This tells the program the mem addr of the printf buffer for cleanup
-static int recursively_called_malloc = 0; // Flag specific to the malloc function to help with generate_stack_trace
-static int recursively_called_calloc = 0; // Flag specific to the calloc function to help with generate_stack_trace
-static int recursively_called_free = 0; // Flag specific to the free function to help with generate_stack_trace
+int this_is_printf = 0;                     // This flag tells malloc that the calling function is printf
+void *printf_buffer_addr = NULL;            // This tells the program the mem addr of the printf buffer for cleanup
+static int recursively_called_malloc = 0;   // Flag specific to the malloc function to help with generate_stack_trace
+static int recursively_called_calloc = 0;   // Flag specific to the calloc function to help with generate_stack_trace
+static int recursively_called_free = 0;     // Flag specific to the free function to help with generate_stack_trace
 
 /*  gdbout_parser()
 *   Helper function to parse the output from running the gdb command
@@ -117,19 +121,19 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
     recursively_called_free = 1;
 
     size = backtrace(array, 10);
-    backtrace_symbols_fd(array, size, f); // This will write the backtrace to the tmpfile
+    backtrace_symbols_fd(array, size, f);   // This will write the backtrace to the tmpfile
     close(f);
     if(backtracestr) backtracestr[0] = 0;
 
     fp = fopen(tmpfile, "r");
-    fclose(fopen("backtrace.gdbout", "w")); // This will clear the .gdbout file for each call to generate_stack_trace
+    fclose(fopen("backtrace.gdbout", "w")); // This will zero the .gdbout file for each call to generate_stack_trace
 
-    while(fgets(line, 256, fp)) // Parse the backtrace.txt file
+    while(fgets(line, 256, fp))             // Parse the backtrace.txt file
     {
         char filename[10];
         char *offset;
         char system_str[100];
-        //For simplicity, making assumption that executable name is always "a.out"
+        // For simplicity, making assumption that executable name is always "a.out"
         if(strncmp(line, "./a.out", 7) == 0)
         {
             strcpy(filename, "a.out");
@@ -139,7 +143,7 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
             if(DEBUG) fprintf(stderr, "++DEBUG++ $ %s\n", system_str);
             system(system_str);
         }
-        if(strncmp(line, "/lib/", 5) == 0) //stop detector
+        if(strncmp(line, "/lib/", 5) == 0)  // stop detector
         {
             break;
         }
@@ -148,13 +152,13 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
 
     fp = fopen("backtrace.gdbout", "r");
     
-    if(backtracestr == NULL) // This is for malloc, calloc, and realloc
+    if(backtracestr == NULL)                // This is for malloc, calloc, and realloc
     {
-        while(fgets(line, 256, fp)) // Parse the backtrace.gdbout file
+        while(fgets(line, 256, fp))         // Parse the backtrace.gdbout file
         {
             char formatted_line[256];
             gdbout_parser(line, formatted_line);
-            strcat(blocks[stackTraceIndex].stack_trace, formatted_line); // Append the formatted line to the block's stack trace field
+            strcat(blocks[stackTraceIndex].stack_trace, formatted_line); // Append the formatted line to the block's stack trace string
         }
     }
     else // free() stack trace parsing
@@ -164,7 +168,7 @@ void generate_stack_trace(char *tmpfile, char *backtracestr)
         {
             char formatted_line[256];
             gdbout_parser(line, formatted_line);
-            strcat(backtracestr, formatted_line);
+            strcat(backtracestr, formatted_line);   // Stack traces for invalid frees are printed when they occur, rather than in summary
         }
     }
 
@@ -238,7 +242,7 @@ void *realloc(void *ptr, size_t new_size)
         void *prev = ptr;       // Need to save ptr since realloc might mess with it behind the scenes
         recursively_called = 1;
         if (!real_realloc)
-            real_realloc = dlsym(RTLD_NEXT, "realloc"); //set to real realloc function via dynamic linker(only happens once due to static ptr)
+            real_realloc = dlsym(RTLD_NEXT, "realloc"); //set to real realloc function via dynamic linker (happens once due to static ptr)
         p = real_realloc(ptr, new_size);
 
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = realloc(%p, %zu) called inside if\n", p, ptr, new_size);
@@ -336,7 +340,7 @@ void *realloc(void *ptr, size_t new_size)
     else // Recursively called
     {
         if (!real_realloc)
-            real_realloc = dlsym(RTLD_NEXT, "realloc");
+            real_realloc = dlsym(RTLD_NEXT, "realloc"); // To ensure that real realloc function is assigned before calling
         
         p = real_realloc(ptr, new_size);
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = realloc(%p, %zu) called inside else\n", p, ptr, new_size);
@@ -356,7 +360,7 @@ void *calloc(size_t num, size_t size)
     {
         recursively_called_calloc = 1;
         if (!real_calloc)
-            real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker(only happens once due to static ptr)
+            real_calloc = dlsym(RTLD_NEXT, "calloc"); //set to real calloc function via dynamic linker (happens once due to static ptr)
         p = real_calloc(num, size);
 
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = calloc(%zu, %zu) called inside if\n", p, num, size);
@@ -408,7 +412,7 @@ void *malloc(size_t size)
     {
         recursively_called_malloc = 1;
         if (!real_malloc)
-            real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker(only happens once due to static ptr)
+            real_malloc = dlsym(RTLD_NEXT, "malloc"); //set to real malloc function via dynamic linker (happens once due to static ptr)
         p = real_malloc(size);
 
         if(DEBUG) fprintf(stderr, "++DEBUG++ %p = malloc(%zu) called inside if\n", p, size);
@@ -461,14 +465,14 @@ void free(void *p)
     {
         recursively_called_free = 1;
         if (!real_free)
-            real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker(only happens once due to static ptr) 
+            real_free = dlsym(RTLD_NEXT, "free"); //set to real free function via dynamic linker (happens once due to static ptr) 
 
         if(DEBUG) fprintf(stderr, "++DEBUG++ free(%p) called inside if\n", p);
 
         int flag = 0;
         for(int x = 0; x < N; x++)
         {
-            if(p == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free --> double free
+            if(p == blocks[x].memAddr && blocks[x].freed == 1) // Invalid free --> double free/free-after-free
             {
                 fprintf(stderr, "%s Invalid free() - memory was already freed at %p\n", pid_str, p);
                 numFrees++;
@@ -484,8 +488,8 @@ void free(void *p)
             }
             else if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
             {
-                real_free(p); // First, call the real free
-                blocks[x].freed = 1; // Then, set block to freed state
+                real_free(p);           // First, call the real free
+                blocks[x].freed = 1;    // Then, set block to freed state
                 numFrees++;
                 flag = 1;
                 break;
@@ -520,8 +524,8 @@ void free(void *p)
         {
             if(p == blocks[x].memAddr && blocks[x].freed == 0) // Valid free
             {
-                real_free(p); // First, call the real free
-                blocks[x].freed = 1; // Then, set block to freed state
+                real_free(p);           // First, call the real free
+                blocks[x].freed = 1;    // Then, set block to freed state
                 numFrees++;
                 break;
             }
@@ -583,7 +587,7 @@ void __attribute__((destructor)) postmain()
                 else if(blocks[x].allocatorType == 2) // malloc
                     strcpy(allocator, "malloc");
 
-                fprintf(stderr, "%s %d bytes lost in a block\n", pid_str, blocks[x].block_size);
+                fprintf(stderr, "%s %zu bytes lost in a block\n", pid_str, blocks[x].block_size);
                 fprintf(stderr, "%s   at %s\n", pid_str, allocator);
                 fprintf(stderr, "%s", blocks[x].stack_trace);
                 fprintf(stderr, "%s\n", pid_str);
