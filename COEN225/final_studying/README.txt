@@ -4,11 +4,21 @@
 
 FROM LECTURE 8
 1.3.3 Study questions:
-a) how many procesess if we add another fork call to fork2.c
-b) how can we modify forkipc.c such that parent process places a string in shared memory 
+a) how many processes if we add another fork call to fork2.c
+   
+   @ 8 processes are created in total -- 3 fork calls = 8 processes
+
+b) how can we modify forkipc.c (shared_mem.c) such that parent process places a string in shared memory 
    for child process to convert to upper case, in the same shared memory
+
+   @ See shared_mem_mod.c
+
 c) if both parent and child processes are sleeping for 100 seconds and parent is killed,
    what becomes the new parent of the child process
+   
+   @ Child process becomes what is known as a 'orphan process' and it is adopted by the 'init process'
+   which is the first process to start when the computer boots up.
+
 d) modify newshell.c such that if the entered command returns a non zero code, the newshell will terminate.
    For instance, if you enter the cat command below and the file xyz does not exist, the return code is non zero.
    $ cat xyz
@@ -16,10 +26,14 @@ d) modify newshell.c such that if the entered command returns a non zero code, t
    $ echo $?
    1
 
+   @ See newshell_mod.c
+
 1.4.1 Study questions:
 Write a program that passes 3 parameters like "xyz", 12, 0.5 to a child thread
-and have it compute a string being "xyz"*(int)12*1.5 = "xyzxyzxyzxyzxyzxyz" and 
+and have it compute a string being "xyz"*(int)12*0.5 = "xyzxyzxyzxyzxyzxyz" and 
 return it.
+
+   @ See thread_str_compute.c
 
 FROM LECTURE 9
 1.2.1 Study questions:
