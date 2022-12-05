@@ -39,23 +39,35 @@ FROM LECTURE 9
 1.2.1 Study questions:
 Fix deadlock.c so they no longer have deadlocks.
 
+   @ See deadlock_fixed.c
+
 1.2.2 Study questions:
 a) Given file locking information from the lslocks command,
    enter them into the detect deadlock program, and show deadlock cycle in DFS order.
+
+
+
 b) Enhance the detect deadlock program to find all deadlocks, not just the first one.
    Fix can be done in the check_deadlock function.
+
+
+
 c) FileLockingAppl.c can only lock one file, then it is blocked.
    Can you modify it so it can lock 2 files?
+
+
 
 2.5.3 Study questions:
 Given a SIMPLE program WITHOUT loops, indicate all code paths.
 
-2.5.4 Study questions: NEED TO INSTALL AFL ON VM
+2.5.4 Study questions:
 Write a small program with a buffer overflow vulnerability.
 Compile it using AFL-GCC.
 Fuzz it using AFL-FUZZ for one hour.
 Report numbers of the crashing and hanging test cases.
 Try the test cases out and see if they indeed produce the crashes or hangs.
+
+   @ See afl_buffer_overflow.c
 
 FROM LECTURE 10
 2. Study question:
