@@ -45,17 +45,47 @@ Fix deadlock.c so they no longer have deadlocks.
 a) Given file locking information from the lslocks command,
    enter them into the detect deadlock program, and show deadlock cycle in DFS order.
 
-
+   @@@@@@@@@@@@@@@@@@@@@@@@@@@
+   Input:
+      process1 file1 file2 *file3      [process1]->[file3]     proc1 waits for file3
+      process2 file3 *file1            [process2]->[file1]     proc2 waits for file1
+   Output:
+      dfs(1)
+      proc 1 has file1 file2 and waits for resource: file3 held by proc 2
+      dfs(2)
+      proc 2 has file3 and waits for resource: file1 held by proc 1
+      dfs(1)
+      Deadlock detected, pid = 1
 
 b) Enhance the detect deadlock program to find all deadlocks, not just the first one.
    Fix can be done in the check_deadlock function.
 
+   @@@@@@@@@@@@@@@@@@@@@@@@@@@ See DetectDeadlocks.c
+   Changes:
+      in check_deadlock(), change "if(dfs(i)) then exit(0)" to "if(!dfs(i)) then exit(0)"
+   Input:
+      process1 file1 file2 *file3      [process1]->[file3]     proc1 waits for file3
+      process2 file3 *file1            [process2]->[file1]     proc2 waits for file1
+      process3 file4 *file2            [process3]->[file2]     proc2 waits for file2
+   Output:
+      dfs(1)
+      proc 1 has file1 file2 and waits for resource: file3 held by proc 2
+      dfs(2)
+      proc 2 has file3 and waits for resource: file1 held by proc 1
+      dfs(1)
+      Deadlock detected, pid = 1
+      Deadlock pid: 2
+      Deadlock pid: 1
+      dfs(3)
+      proc 3 has file4 and waits for resource: file2 held by proc 1
+      dfs(1)
+      Deadlock detected, pid = 1
+      Deadlock pid: 3
 
-
-c) FileLockingAppl.c can only lock one file, then it is blocked.
+c) FileLockingApp.c can only lock one file, then it is blocked.
    Can you modify it so it can lock 2 files?
 
-
+   @ See FileLockingApp.c (can lock more than 2 files)
 
 2.5.3 Study questions:
 Given a SIMPLE program WITHOUT loops, indicate all code paths.
@@ -68,6 +98,9 @@ Report numbers of the crashing and hanging test cases.
 Try the test cases out and see if they indeed produce the crashes or hangs.
 
    @ See afl_buffer_overflow.c
+   @ 11 unique crashes
+   @ 0 hanging test cases
+
 
 FROM LECTURE 10
 2. Study question:
