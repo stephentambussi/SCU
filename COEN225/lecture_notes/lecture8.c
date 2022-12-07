@@ -13,8 +13,6 @@ int main()
 }
 
 /*
-*   TOOD: do study questions for final from this lecture
-*   
 *   Concurrency vs. Parallelism
 *     Concurrency: running multiple programs at once, but not necessarily executing at the same instantaneous point in time
 *       - Think of a person juggling tennis balls

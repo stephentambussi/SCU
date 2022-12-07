@@ -17,7 +17,7 @@ c) if both parent and child processes are sleeping for 100 seconds and parent is
    what becomes the new parent of the child process
    
    @ Child process becomes what is known as a 'orphan process' and it is adopted by the 'init process'
-   which is the first process to start when the computer boots up.
+     which is the first process to start when the computer boots up.
 
 d) modify newshell.c such that if the entered command returns a non zero code, the newshell will terminate.
    For instance, if you enter the cat command below and the file xyz does not exist, the return code is non zero.
@@ -90,6 +90,8 @@ c) FileLockingApp.c can only lock one file, then it is blocked.
 2.5.3 Study questions:
 Given a SIMPLE program WITHOUT loops, indicate all code paths.
 
+   @ See iPad
+
 2.5.4 Study questions:
 Write a small program with a buffer overflow vulnerability.
 Compile it using AFL-GCC.
@@ -101,11 +103,15 @@ Try the test cases out and see if they indeed produce the crashes or hangs.
    @ 11 unique crashes
    @ 0 hanging test cases
 
-
 FROM LECTURE 10
 2. Study question:
 Given a program with runtime vulnerabilities, indicate which ones can/cannot be detected by Valgrind/Google Sanitizer.
 
+   @ See runtime_vulnerabilities.c
+
 3. Study questions:
 Given a program, identify the vulnerabilities, and which analysis solution is used to detect the vulnerabilities.
 Given a tainted program, provide malicious input to inject a command.
+
+   @ See static_dynamic.c
+   @ See CallGDB4result.c

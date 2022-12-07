@@ -13,8 +13,6 @@ int main()
 }
 
 /*
-*   TODO: do study questions for final from this lecture
-*
 *   Deadlocks
 *   - see deadlock.c
 *   - Helgrind CANNOT usually detect deadlocks (still a good idea to try it)

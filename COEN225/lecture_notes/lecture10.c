@@ -23,7 +23,7 @@ int main()
 *   Analysis              Analysis   Analysis
 *
 *   Dynamic analysis examples: valgrind, fuzzing
-*   Static analysis examples: gcc (includes tool)
+*   Static analysis examples: gcc (includes tool), Flawfinder
 *
 *   Valgrind alternative: Google Sanitizer for C/C++
 *       valgrind shortcomings: slow, resources demanding, cannot detect
