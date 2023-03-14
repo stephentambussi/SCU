@@ -3,8 +3,8 @@ COEN225 - HW4: Memory Leak Detector
 11/29/22
 Summary of Implementation
 
-This program is developed as a shared object (.so) and linked during runtime to intercept calls made by the running
-process.
+This program is developed as a shared object (.so) and linked during runtime to intercept 
+calls made by the running process. Details of its implementation are below:
 
 My implementation not only incorporates accurate memory tracking on the target process,
 but also provides stack traces for invalid frees and memory leaks, similar to valgrind.
