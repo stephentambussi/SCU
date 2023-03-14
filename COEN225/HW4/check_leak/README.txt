@@ -48,4 +48,4 @@ but also provides stack traces for invalid frees and memory leaks, similar to va
     the non-intercepted version of printf would allocate memory, but then not free it (at least explicitly). 
     To resolve this, I intercepted printf calls in the target program and made one small change. 
     This intercepted printf frees its malloc'd buffer in the postmain function. After this fix, the 
-    output from my implementation matches the output of valgrind.
+    output from my implementation matches the typical output of valgrind.
