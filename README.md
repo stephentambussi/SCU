@@ -21,3 +21,4 @@ A collection of the computer engineering classes I have taken at SCU with the re
 * ELEN285 - Introduction to the Smart Grid (Python)
 * COEN225 - Secure Coding in C & C++ (C, C++)
 * COEN383 - Advanced Operating Systems (C)
+* COEN379 - Advanced Design & Analysis of Algorithms (C++, C)
