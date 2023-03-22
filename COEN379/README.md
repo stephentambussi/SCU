@@ -1,5 +1,5 @@
-# COEN225
-Fall 2022 - In-person\
-Secure Coding in C & C++ with Lam\
+# COEN379
+Winter 2023 - In-person\
+Advanced Design & Analysis of Algorithms with Tran\
 Graduate course for 4+1 program (masters)\
 Contains HWs, etc.
