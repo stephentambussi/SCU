@@ -1,5 +1,6 @@
 # SCU
-A collection of the computer engineering classes I have taken at SCU with the relevant coursework.
+A collection of the computer engineering classes I have taken at SCU with the relevant coursework. \
+**Please note:** this repository only includes classes that involved programming.
 ## Undergraduate (BS)
 * AMTH108 - Probability and Statistics
 * COEN11 - Advanced Programming (C)
