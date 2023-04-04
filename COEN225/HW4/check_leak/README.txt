@@ -1,5 +1,5 @@
 Stephen Tambussi
-COEN225 - HW4: Memory Leak Detector
+COEN225 - Memory Leak Detector
 11/29/22
 Summary of Implementation
 
