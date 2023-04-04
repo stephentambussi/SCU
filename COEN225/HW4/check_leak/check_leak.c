@@ -10,8 +10,8 @@
  *      3) Run a.out using custom library: "LD_PRELOAD=$PWD/check_leak.so ./a.out"
  * 
  *   NOTE:
- *      This program is a prototype and was only designed to work on the 5 tests.
- *      Running this program on code outside these tests may produce unexpected results.
+ *      This program is a prototype and has only been tested on the 5 provided test cases.
+ *      Running this program on code outside these tests may produce unexpected or incorrect results.
  */
 
 #define _GNU_SOURCE
