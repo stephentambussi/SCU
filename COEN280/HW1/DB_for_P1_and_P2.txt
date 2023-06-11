@@ -1,0 +1,63 @@
+-- this is an example
+
+group: COEN280 Assignment1 
+
+
+Employee = {
+	EmpName:string, SSN:number, PhoneNo:number, Salary:number, DeptNo:number, SupervisorSSN:number
+	'Jim'         , 10        , 2             , 100000       , 2            , 20                  
+	'Dave'        , 20        , 5             , 200000       , 2            , 100                 
+	'Dylan'       , 30        , 7             , 150000       , 1            , 100                 
+	'Brandon'     , 40        , 8             , 200000       , 3            , 100                 
+	'Kevin'       , 50        , 9             , 150000       , 1            , 30                  
+	'Steve'       , 100       , 1             , 300000       , 3            , 100                 
+}
+
+Department = {
+	DeptName:string, DeptNo:number, ManagerSSN:number
+	'R&D'          , 1            , 30               
+	'Legal'        , 2            , 20               
+	'Business'     , 3            , 100              
+}
+
+DeptLocations = {
+	DeptNumber:number, location:string
+	1                , 'Santa Clara'  
+	2                , 'Philly'       
+	3                , 'Philly'       
+}
+
+Project = {
+	ProjectName:string, ProjNumber:number, location:string, DeptNum:number
+	'CPU'             , 1                , 'Santa Clara'  , 1             
+	'GPU'             , 2                , 'Santa Clara'  , 1             
+	'Memory'          , 3                , 'Santa Clara'  , 1             
+	'Lawsuit'         , 4                , 'Philly'       , 2             
+	'IncreaseSales'   , 5                , 'Philly'       , 3             
+}
+
+Works_On = {
+	EmpSSN:number, ProjNumber:number, Hours:number
+	10           , 4                , 100         
+	20           , 4                , 60          
+	30           , 1                , 40          
+	30           , 2                , 40          
+	30           , 3                , 40          
+	50           , 1                , 35          
+	50           , 2                , 35          
+	50           , 3                , 35          
+	40           , 5                , 40          
+	100          , 5                , 45          
+}
+
+Dependent = {
+	EmployeeSSN:number, dependentName:string, BirthDate:number
+	100               , 'Wife'              , 1999            
+	100               , 'Child1'            , 2015            
+	100               , 'Child2'            , 2018            
+	20                , 'Wife'              , 1994            
+	20                , 'Child1'            , 2012            
+	20                , 'Child2'            , 2016            
+	40                , 'Wife'              , 2000            
+	10                , 'Wife'              , 1998            
+}

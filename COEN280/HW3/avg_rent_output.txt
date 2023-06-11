@@ -1,0 +1,9 @@
+
+                                                       StrawberryField Rental Management Inc.
+Property Data as of June1,2023
+
+
+Number of Properties Available Number of Properties Leased Average Monthly Rent
+------------------------------ --------------------------- --------------------
+                             3                           2   $2,760.00
+

@@ -1,0 +1,5 @@
+R1 = (Project) ⨝ Project.DeptNum=Department.DeptNo (Department)
+R2 = (R1) ⨝ Department.ManagerSSN=Employee.SSN (Employee)
+R3 = σ location='Santa Clara' (R2)
+R4 = π ProjNumber, ProjectName, DeptNum, EmpName (R3)
+ρ ManagerName←EmpName (ρ Ans (R4))

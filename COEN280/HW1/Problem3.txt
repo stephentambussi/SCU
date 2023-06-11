@@ -1,0 +1,4 @@
+ProjLoc = π ProjNumber (σ location='Santa Clara' (Project))
+SCProjects = (ProjLoc) ⨝ Project.ProjNumber=Works_On.ProjNumber (Works_On)
+EmpWorksOn = π EmpSSN (SCProjects)
+π EmpName ((Employee) ⨝ Employee.SSN=Works_On.EmpSSN (EmpWorksOn))

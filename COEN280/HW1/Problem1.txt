@@ -1,0 +1,3 @@
+R1 = (Employee) ⨝ Employee.DeptNo=Department.DeptNo (Department)
+R2 = σ DeptName='R&D' (R1)
+π EmpName, PhoneNo (R2)

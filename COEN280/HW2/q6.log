@@ -1,0 +1,26 @@
+
+PROJECTNAME                    PROJNUMBER LOCATION                          DEPTNUM
+------------------------------ ---------- ------------------------------ ----------
+Smartphone                              1 Fremont                                 3
+Laptop                                  2 Santa Clara                             3
+TV                                      3 Santa Clara                             3
+Computer Chip                           4 Fremont                                 3
+New Slogan                              5 San Diego                               4
+
+
+    EMPSSN PROJNUMBER START_DAT      HOURS
+---------- ---------- --------- ----------
+       100          1 19-AUG-20         50
+       100          5 05-AUG-15         50
+        40          5 01-AUG-15         60
+        25          4 03-JUN-21         40
+        95          3 18-DEC-20         45
+
+
+
+RESULT OF QUERY:
+
+PROJECTNAME                    PROJNUMBER LOCATION                      
+------------------------------ ---------- ------------------------------
+New Slogan                              5 San Diego                     
+

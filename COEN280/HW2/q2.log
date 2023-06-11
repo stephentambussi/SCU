@@ -1,0 +1,205 @@
+SQL> /*  Stephen Tambussi
+  2      COEN280 - Spring 2023
+  3      HW2 - Question 2
+  4  */
+SQL> -- Insert 10 tuples into Employee
+SQL> INSERT INTO Employee VALUES('Steve', 100, 100, 300000, 5, 100);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Kim', 95, 150, 250000, 5, 100);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Brandon', 40, 800, 200000, 4, 100);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Tim', 55, 950, 200000, 3, 40);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Brett', 35, 300, 100000, 4, 40);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Dave', 25, 500, 200000, 2, 100);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Kevin', 50, 900, 150000, 3, 55);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Jeff', 20, 450, 100000, 2, 25);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Jack', 15, 250, 100000, 1, 20);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Employee VALUES('Jim', 10, 200, 100000, 1, 15);
+
+1 row created.
+
+Commit complete.
+
+
+SQL> -- Insert 5 tuples into Department
+SQL> set define off; -- allows & character to be used without prompting for input
+
+SQL> INSERT INTO Department VALUES('Executive', 5, 100);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Department VALUES('Marketing', 4, 40);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Department VALUES('R&D', 3, 55);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Department VALUES('Legal', 2, 25);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Department VALUES('HR', 1, 15);
+
+1 row created.
+
+Commit complete.
+
+
+SQL> -- Add foreign key constraint to Employee table where DNO references DeptNo in Department table
+SQL> ALTER TABLE Employee ADD CONSTRAINT dno_foreignKey FOREIGN KEY (DNO) REFERENCES Department(DeptNo);
+
+TABLE altered.
+
+SQL> -- Insert 6 tuples into DeptLocations
+SQL> INSERT INTO DeptLocations VALUES(5, 'Santa Clara');
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO DeptLocations VALUES(4, 'San Diego');
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO DeptLocations VALUES(3, 'Fremont');
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO DeptLocations VALUES(3, 'Santa Clara');
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO DeptLocations VALUES(2, 'San Jose');
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO DeptLocations VALUES(1, 'Los Angeles');
+
+1 row created.
+
+Commit complete.
+
+
+SQL> -- Insert 5 tuples into Project
+SQL> INSERT INTO Project VALUES('Smartphone', 1, 'Fremont', 3);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Project VALUES('Laptop', 2, 'Santa Clara', 3);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Project VALUES('TV', 3, 'Santa Clara', 3);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Project VALUES('Computer Chip', 4, 'Fremont', 3);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Project VALUES('New Slogan', 5, 'San Diego', 4);
+
+1 row created.
+
+Commit complete.
+
+
+SQL> -- Insert 5 tuples into Works_On
+SQL> INSERT INTO Works_On VALUES(100, 1, '19-AUG-20', 50);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Works_On VALUES(100, 5, '05-AUG-15', 50);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Works_On VALUES(40, 5, '01-AUG-15', 60);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Works_On VALUES(25, 4, '03-JUN-21', 40);
+
+1 row created.
+
+Commit complete.
+
+SQL> INSERT INTO Works_On VALUES(95, 3, '18-DEC-20', 45);
+
+1 row created.
+
+Commit complete.

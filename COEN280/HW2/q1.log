@@ -1,0 +1,55 @@
+SQL> /*  Stephen Tambussi
+  2      COEN280 - Spring 2023
+  3      HW2 - Question 1
+  4  */
+SQL> CREATE TABLE Employee
+  2  (
+  3      EmpName varchar2(30),
+  4      SSN INTEGER PRIMARY KEY,
+  5      PhoneNo INTEGER NOT NULL UNIQUE,
+  6      Salary INTEGER CHECK(Salary > 0),
+  7      DNO INTEGER,
+  8      SupervisorSSN INTEGER REFERENCES Employee(SSN)
+  9  );
+
+TABLE created.
+
+SQL> CREATE TABLE Department
+  2  (
+  3      DeptName varchar2(30),
+  4      DeptNo INTEGER PRIMARY KEY,
+  5      ManagerSSN INTEGER REFERENCES Employee(SSN)
+  6  );
+
+TABLE created.
+
+SQL> -- Moved to hw2_q2.sql to make it easier to add tuples to the tables
+SQL> -- ALTER TABLE Employee ADD CONSTRAINT dno_foreignKey FOREIGN KEY (DNO) REFERENCES Department(DeptNo);
+SQL> CREATE TABLE DeptLocations
+  2  (
+  3      DeptNumber INTEGER REFERENCES Department(DeptNo),
+  4      location varchar2(30),
+  5      PRIMARY KEY(DeptNumber, location)
+  6  );
+
+TABLE created.
+
+SQL> CREATE TABLE Project
+  2  (
+  3      ProjectName varchar2(30),
+  4      ProjNumber INTEGER PRIMARY KEY,
+  5      location varchar2(30),
+  6      DeptNum INTEGER REFERENCES Department(DeptNo)
+  7  );
+
+TABLE created.
+
+SQL> CREATE TABLE Works_On
+  2  (
+  3      EmpSSN INTEGER REFERENCES Employee(SSN),
+  4      ProjNumber INTEGER REFERENCES Project(ProjNumber),
+  5      start_date date,
+  6      Hours INTEGER
+  7  );
+
+TABLE created.

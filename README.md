@@ -20,5 +20,6 @@ A collection of the computer engineering classes I have taken at SCU with the re
 * COEN268 - Mobile Application Development (Java and Android)
 * ELEN285 - Introduction to the Smart Grid (Python)
 * COEN225 - Secure Coding in C & C++ (C, C++)
+* COEN280 - Database Systems (SQL)
 * COEN383 - Advanced Operating Systems (C)
 * COEN379 - Advanced Design & Analysis of Algorithms (C++)

@@ -1,0 +1,43 @@
+
+EMPNAME                               SSN    PHONENO     SALARY        DNO SUPERVISORSSN
+------------------------------ ---------- ---------- ---------- ---------- -------------
+Steve                                 100        100     300000          5           100
+Kim                                    95        150     250000          5           100
+Brandon                                40        800     200000          4           100
+Tim                                    55        950     200000          3            40
+Brett                                  35        300     100000          4            40
+Dave                                   25        500     200000          2           100
+Kevin                                  50        900     150000          3            55
+Jeff                                   20        450     100000          2            25
+Jack                                   15        250     100000          1            20
+Jim                                    10        200     100000          1            15
+
+10 rows selected. 
+
+
+DEPTNAME                           DEPTNO MANAGERSSN
+------------------------------ ---------- ----------
+R&D                                     3         55
+Legal                                   2         25
+Executive                               5        100
+Marketing                               4         40
+HR                                      1         15
+
+
+PROJECTNAME                    PROJNUMBER LOCATION                          DEPTNUM
+------------------------------ ---------- ------------------------------ ----------
+Smartphone                              1 Fremont                                 3
+Laptop                                  2 Santa Clara                             3
+TV                                      3 Santa Clara                             3
+Computer Chip                           4 Fremont                                 3
+New Slogan                              5 San Diego                               4
+
+
+
+RESULT OF QUERY:
+
+PROJNUMBER PROJECTNAME                       DEPTNUM MANAGERNAME                       PHONENO
+---------- ------------------------------ ---------- ------------------------------ ----------
+         2 Laptop                                  3 Tim                                   950
+         3 TV                                      3 Tim                                   950
+

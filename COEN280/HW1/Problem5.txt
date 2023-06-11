@@ -1,0 +1,4 @@
+AllEmps = π SSN (Employee)
+EmpsDeps = ρ SSN←EmployeeSSN (π EmployeeSSN (Dependent))
+EmpsNoDeps = ρ ESSN←SSN (AllEmps - EmpsDeps)
+π EmpName ((EmpsNoDeps) ⨝ Employee.ESSN=Employee.SSN (Employee))

@@ -1,0 +1,3 @@
+T1 = γ EmployeeSSN; count(dependentName)->numDependents (Dependent)
+T2 = σ numDependents ≥ 2 (T1)
+π EmpName ((T2) ⨝ Dependent.EmployeeSSN=Employee.SSN (Employee))
